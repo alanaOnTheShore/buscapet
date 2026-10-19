@@ -82,17 +82,17 @@ buscapet/
 - Git configurado.
 ### Passo a Passo
 1. Clonar o repositório:  
-**Bash**
+**Bash**  
 git clone [https://github.com/SEU-USUARIO/buscapet.git](https://github.com/SEU-USUARIO/buscapet.git)  
 cd buscapet  
-2. Instalar as dependências:
-**Bash**
+2. Instalar as dependências:  
+**Bash**  
 npm install  
-3. Executar os testes automatizados (Jest):
-**Bash**
+3. Executar os testes automatizados (Jest):  
+**Bash**  
 npm test  
-4. Iniciar o servidor em ambiente de desenvolvimento:
-**Bash**
+4. Iniciar o servidor em ambiente de desenvolvimento:  
+**Bash**  
 npm start  
 ## 👥 Equipe de Desenvolvimento
 - Alana Paola Silva Nascimento — Scrum Master, Documentadora & Full-stack
