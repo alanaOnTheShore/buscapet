@@ -1,5 +1,5 @@
 body {
-  background-image: url(/img/bg-login.png);
+  background-image: url(../img/bg-login.png);
   background-size: cover;
   background-repeat: no-repeat; /* evita que a imagem se repita */
   background-position: 50% 45%;
