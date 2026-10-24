@@ -65,17 +65,20 @@ O projeto segue a abordagem de **Test-Driven Development (TDD)**, onde as regras
 
 ```text
 buscapet/
-├── .github/
-│   └── workflows/        # Configurações do GitHub Actions (CI/CD)
-├── src/
-│   ├── backend/          # Rotas, controladores e serviços
-│   ├── frontend/         # Páginas, componentes e estilização
-│   └── database/         # Conexão e migrations do PostgreSQL
-└── tests/                # Arquivos executáveis de teste do Jest
-    ├── auth.test.js
-    ├── adoption.test.js
-    ├── lost-found.test.js
-    └── filters.test.js
+├── back-end/             # Lógica do servidor e rotas da aplicação
+├── css/                  # Arquivos de estilização (ex: index.css, meus-pets.css)
+├── img/                  # Imagens e assets visuais do projeto
+├── .gitignore            # Arquivos e pastas ignorados pelo Git
+├── README.md             # Documentação principal do repositório
+├── cadastro-perfil.html  # Página de cadastro de usuário
+├── cadastro-pet.html     # Página de cadastro de novos pets
+├── criar-nova-senha.html # Página para redefinição/criação de nova senha
+├── home.html             # Página principal/home do sistema
+├── index.html            # Página de entrada/login
+├── meus-pets.html        # Página de gerenciamento dos pets cadastrados
+├── package.json          # Dependências e scripts do projeto Node.js
+├── perfil.html           # Página de perfil do usuário
+└── redefinir-senha.html  # Página de fluxo de recuperação de senha
 ````
 
 ## 🚀 Como Executar o Projeto Localmente:
