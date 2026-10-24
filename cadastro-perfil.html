@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="css/geral.css" />
+    <link rel="stylesheet" href="css/cadastro.css" />
+  </head>
+  <body>
+    <main class="main-formulario">
+      <a
+        href="index.html"
+        class="botao-fechar"
+        style="text-decoration: none; color: #411c57"
+        >&times;</a
+      >
+
+      <!-- FORMULARIO -->
+      <form action="/cadastrar" method="POST" id="form-cadastro">
+        <h2>CRIE SUA CONTA</h2>
+
+        <!-- NOME: máximo 120 caracteres conforme o banco -->
+        <label for="nome-cadastro">Nome Completo / Nome da ONG:</label>
+        <input
+          type="text"
+          id="nome-cadastro"
+          name="nome"
+          maxlength="120"
+          required
+        />
+
+        <!-- EMAIL: máximo 160 caracteres e pattern alinhado à CONSTRAINT do banco -->
+        <label for="email-cadastro">E-mail:</label>
+        <input
+          type="email"
+          id="email-cadastro"
+          name="email"
+          maxlength="160"
+          pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+          title="Insira um e-mail válido (ex: nome@dominio.com)"
+          required
+        />
+
+        <!-- TELEFONE -->
+        <label for="telefone-cadastro">Telefone (WhatsApp):</label>
+        <input
+          type="tel"
+          id="telefone-cadastro"
+          name="telefone"
+          maxlength="20"
+          placeholder="(00) 00000-0000"
+          required
+        />
+
+        <!-- TIPO DE USUÁRIO (Baseado no ENUM tipo_usuario do banco) -->
+        <label for="tipo-cadastro">Você é:</label>
+        <div class="custom-select">
+          <select id="tipo-cadastro" name="tipo" required>
+            <option selected value="PESSOA">
+              Pessoa Física (Protetor/Tutor)
+            </option>
+            <option value="ONG">ONG / Abrigo de Animais</option>
+          </select>
+        </div>
+
+        <!-- SENHA: Limitada por segurança, o hash ocupará os 255 espaços do banco -->
+        <label for="senha-cadastro">Senha:</label>
+        <input
+          type="password"
+          id="senha-cadastro"
+          name="senha"
+          minlength="6"
+          maxlength="72"
+          required
+        />
+
+        <label for="conf-senha-cadastro">Confirme a Senha:</label>
+        <input
+          type="password"
+          id="conf-senha-cadastro"
+          name="conf-senha"
+          required
+        />
+
+        <!-- CHECKBOX: aceite de termos de uso -->
+        <label
+          for="aceite"
+          style="display: flex; align-items: center; gap: 5px; cursor: pointer"
+        >
+          <input type="checkbox" id="aceite" name="aceite" required />
+          <span
+            >Eu concordo com os
+            <a
+              href="#"
+              id="abrir-termos"
+              style="text-decoration: underline; color: #411c57"
+              >Termos de Uso</a
+            >
+          </span>
+        </label>
+
+        <button type="submit" class="meu-botao">CADASTRAR</button>
+      </form>
+
+      <!-- MODAL TERMOS DE USO -->
+      <div id="modal-termos" class="fundo-modal">
+        <div class="conteudo-modal">
+          <h3>Termos e Condições de Uso - BuscaPet</h3>
+          <button id="btn-fechar-termos" class="botao-fechar">&times;</button>
+          <div class="texto-termos">
+            <p>
+              <strong>1. O Serviço</strong><br />
+              O BuscaPet é uma plataforma gratuita que visa conectar pessoas e
+              ONGs para facilitar a adoção de animais e auxiliar na localização
+              de pets perdidos ou encontrados. Nós funcionamos exclusivamente
+              como uma ponte de comunicação e divulgação.
+            </p>
+
+            <p>
+              <strong>2. Cadastro e Segurança</strong><br />
+              Ao se cadastrar como PESSOA ou ONG, você se compromete a fornecer
+              informações verdadeiras e atualizadas (Nome, E-mail e Telefone). A
+              segurança da sua senha é de sua responsabilidade.
+            </p>
+
+            <p>
+              <strong>3. Divulgação de Contato (WhatsApp)</strong><br />
+              Para que o sistema funcione, o número de telefone fornecido no
+              cadastro será exibido publicamente nos anúncios de animais que
+              você publicar. Isso permite que outros usuários entrem em contato
+              direto com você para adotar ou relatar pistas de um pet perdido.
+            </p>
+
+            <p>
+              <strong>4. Responsabilidade pelos Conteúdos e Animais</strong
+              ><br />
+              • O usuário é o único responsável pelas fotos, descrições e
+              detalhes de fuga enviados à plataforma.<br />
+              • É terminantemente proibida a venda de animais ou a cobrança de
+              taxas por resgate através da plataforma.<br />
+              • O BuscaPet não se responsabiliza pela veracidade dos anúncios,
+              pelo comportamento dos animais anunciados ou pelas negociações e
+              visitas combinadas entre os usuários.
+            </p>
+
+            <p>
+              <strong>5. Moderação e Exclusão de Contas</strong><br />
+              Reservamo-nos o direito de remover anúncios falsos, abusivos ou
+              que violem os direitos dos animais, bem como banir usuários que
+              utilizem a plataforma de forma indevida.
+            </p>
+
+            <p>
+              Ao marcar a caixa de seleção, você declara que leu, compreendeu e
+              aceita estes termos.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      //EFEITO DOS BOTOES NO iOS
+      document.addEventListener("touchstart", function () {}, true);
+
+      //ATIVA MODAL TERMOS DE USO
+      const modal = document.getElementById("modal-termos");
+
+      //abre o pop-up ao clicar no botão Entrar
+      document
+        .getElementById("abrir-termos")
+        .addEventListener("click", () => modal.classList.add("mostrar"));
+
+      // Fecha o pop-up ao clicar no (X)
+      document
+        .getElementById("btn-fechar-termos")
+        .addEventListener("click", () => modal.classList.remove("mostrar"));
+
+      // VALIDAÇÃO DE SENHAS IDENTICAS ANTES DO ENVIO
+      document
+        .getElementById("form-cadastro")
+        .addEventListener("submit", function (event) {
+          const senha = document.getElementById("senha-cadastro").value;
+          const confSenha = document.getElementById(
+            "conf-senha-cadastro"
+          ).value;
+
+          if (senha !== confSenha) {
+            event.preventDefault(); // Cancela o envio do formulário
+            alert("As senhas não coincidem! Por favor, verifique.");
+          }
+        });
+    </script>
+  </body>
+</html>

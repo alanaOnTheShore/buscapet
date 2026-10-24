@@ -1,0 +1,136 @@
+css body {
+  background-color: var(--baixissimo);
+  padding-bottom: 90px;
+}
+
+/* HEADER DA TELA */
+.header-cadastro {
+  background-color: var(--branco);
+  padding: 15px;
+  border-bottom: 1px solid var(--secundaria-baixo);
+}
+
+.header-cadastro .logo-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-mini {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.header-cadastro h1 {
+  font-size: 1.2rem;
+  color: var(--principal);
+  font-weight: 900;
+}
+
+/* MAIN FORMULÁRIO */
+.main-cadastro-pet {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-cadastro-pet h2 {
+  font-size: 1.3rem;
+  color: var(--principal);
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+/* Ajuste específico para áreas de texto (Descrição e Fuga) */
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--secundaria);
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-family: inherit;
+  margin-bottom: 20px;
+  background-color: var(--branco);
+  resize: none;
+}
+
+textarea:focus,
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--principal);
+}
+
+/* O SELETOR EM CAIXA COM A SETA PERSONALIZADA (Reutilizando sua lógica leve) */
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 35px;
+}
+
+.custom-select::after {
+  content: "";
+  position: absolute;
+  right: 15px;
+  top: calc(50% - 10px); /* Alinhamento compensando o margin-bottom do input */
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--principal);
+  pointer-events: none;
+}
+
+/* CONTÊINER DE UPLOAD DE IMAGEM */
+.upload-container {
+  position: relative;
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 25px;
+  background-color: var(--branco);
+  border: 2px dashed var(--secundaria);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.upload-container input[type="file"] {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0; /* Torna o input de arquivo invisível para usarmos o layout customizado acima */
+  cursor: pointer;
+  margin: 0;
+}
+
+.upload-placeholder {
+  font-size: 14px;
+  color: var(--principal-baixo);
+  font-weight: bold;
+}
+
+/* BOTÃO DE ENVIAR */
+.btn-salvar-pet {
+  width: 100%;
+  min-height: 48px;
+  background-color: var(--secundaria);
+  color: var(--principal);
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.btn-salvar-pet:active {
+  opacity: 0.9;
+}

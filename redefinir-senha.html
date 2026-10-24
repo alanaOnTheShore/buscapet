@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redefinir Senha</title>
+    <link rel="stylesheet" href="css/geral.css" />
+    <link rel="stylesheet" href="css/redefinir-senha.css" />
+  </head>
+  <body>
+    <main class="main-redefine">
+      <a
+        href="index.html"
+        class="botao-fechar"
+        style="text-decoration: none; color: #411c57"
+        >&times;</a
+      >
+
+      <!-- FORMULARIO REDEFINIÇÃO -->
+      <form action="/recuperar-senha" method="POST" id="form-redefinir">
+        <h2>Esqueceu sua senha?</h2>
+        <p>
+          Não se preocupe, enviaremos uma mensagem com o passo-a-passo para o
+          e-mail que você cadastrou.
+        </p>
+
+        <label for="email-redefinicao">E-mail:</label>
+        <!-- name adicionado, limite de 160 e o pattern idêntico ao do banco -->
+        <input
+          type="email"
+          id="email-redefinicao"
+          name="email"
+          maxlength="160"
+          pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+          title="Insira um e-mail válido (ex: nome@dominio.com)"
+          required
+        />
+
+        <button type="submit" class="novo-botao">ENVIAR</button>
+      </form>
+
+      <!-- Mensagem de confirmação que aparece após o envio (inicialmente oculta) -->
+      <div
+        id="mensagem-sucesso"
+        style="display: none; text-align: center; margin-top: 20px"
+      >
+        <p style="color: green; font-weight: bold">
+          📬 Se este e-mail estiver cadastrado, as instruções foram enviadas!
+        </p>
+        <a href="index.html" style="color: #411c57; text-decoration: underline"
+          >Voltar para o início</a
+        >
+      </div>
+    </main>
+
+    <script>
+      // EFEITO DOS BOTOES NO iOS
+      document.addEventListener("touchstart", function () {}, true);
+
+      document
+        .getElementById("form-redefinir")
+        .addEventListener("submit", async function (event) {
+          //impede a página de recarregar/atualizar ao enviar o formulário
+          event.preventDefault();
+
+          const emailInput = document.getElementById("email-redefinicao");
+          const emailValue = emailInput.value.trim();
+          const msgSucesso = document.getElementById("mensagem-sucesso");
+          const form = document.getElementById("form-redefinir");
+
+          try {
+            //envia o e-mail para a rota do servidor de forma invisível
+            const resposta = await fetch("/api/recuperar-senha", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email: emailValue }), //transforma o e-mail em JSON para o servidor ler
+            });
+
+            //mensagem de sucesso exibida mesmo se o email não estiver cadastrado: previne ataque malicioso
+            form.style.display = "none";
+            msgSucesso.style.display = "block";
+          } catch (error) {
+            console.error("Erro ao conectar com o servidor:", error);
+            alert("Ocorreu um erro de conexão. Tente novamente mais tarde.");
+          }
+        });
+    </script>
+  </body>
+</html>

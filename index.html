@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>BuscaPet</title>
+    <link rel="stylesheet" href="css/geral.css" />
+    <link rel="stylesheet" href="css/index.css" />
+  </head>
+  <body>
+    <header>
+      <p>Bem-vindo ao</p>
+      <h1>BuscaPet</h1>
+    </header>
+    <div class="logo-inicial">
+      <img
+        src="img/logo.png"
+        alt="logo-buscapet"
+        width="150px"
+        height="150px"
+      />
+    </div>
+    <section class="login-cadastrar">
+      <button id="btn-login" class="meu-botao">LOGIN</button>
+      <a href="cadastro-perfil.html" id="btn-cadastrar" class="meu-botao"
+        >CADASTRAR</a
+      >
+    </section>
+
+    <!-- MODAL de LOGIN -->
+    <section id="modal-login" class="fundo-modal">
+      <div class="conteudo-modal">
+        <h2>OLÁ NOVAMENTE!</h2>
+        <p>Entre na sua conta</p>
+
+        <!-- botao de fechar (X) -->
+        <button id="btn-fechar-login" class="botao-fechar">&times;</button>
+
+        <!-- formulário -->
+        <form action="/login" method="POST" id="form-login">
+          <label for="email">E-mail</label>
+          <!--maxlength e pattern para cumprir a constraint do banco-->
+          <input
+            type="email"
+            id="email"
+            name="email"
+            maxlength="160"
+            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            title="Insira um e-mail válido (ex: usuario@dominio.com)"
+            required
+          />
+
+          <label for="senha">Senha</label>
+          <!--o banco guarda senha_hash (255)-->
+          <input
+            type="password"
+            id="senha"
+            name="senha"
+            maxlength="72"
+            required
+          />
+
+          <a
+            href="redefinir-senha.html"
+            id="esqueci-senha"
+            style="text-decoration: underline; color: #411c57"
+            >Esqueceu a senha?</a
+          >
+          <button type="submit" class="meu-botao">ENTRAR</button>
+        </form>
+      </div>
+    </section>
+    <script>
+      //EFEITO DOS BOTOES NO iOS
+      document.addEventListener("touchstart", function () {}, true);
+
+      //ATIVA MODAL LOGIN
+      const modal = document.getElementById("modal-login");
+
+      //abre o pop-up ao clicar no botão Entrar
+      document
+        .getElementById("btn-login")
+        .addEventListener("click", () => modal.classList.add("mostrar"));
+
+      // Fecha o pop-up ao clicar no (X)
+      document
+        .getElementById("btn-fechar-login")
+        .addEventListener("click", () => modal.classList.remove("mostrar"));
+
+      // VALIDAÇÃO EXTRA VIA JAVASCRIPT
+      document
+        .getElementById("form-login")
+        .addEventListener("submit", function (event) {
+          const emailInput = document.getElementById("email");
+          const emailValue = emailInput.value.trim();
+
+          // Limpa espaços em branco acidentais antes de enviar
+          emailInput.value = emailValue;
+
+          // Validação extra de segurança para a senha (ex: tamanho mínimo)
+          const senhaInput = document.getElementById("senha");
+          if (senhaInput.value.length < 6) {
+            event.preventDefault();
+            alert("A senha deve ter pelo menos 6 caracteres.");
+          }
+        });
+    </script>
+  </body>
+</html>

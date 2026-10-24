@@ -1,0 +1,137 @@
+body {
+  background-image: url(/img/bg-login.png);
+  background-size: cover;
+  background-repeat: no-repeat; /* evita que a imagem se repita */
+  background-position: 50% 45%;
+}
+
+p {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  line-height: 1.6;
+}
+
+h1 {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  line-height: 1.2;
+}
+
+/*LOGIN*/
+/*header*/
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 35vh;
+  gap: 5px;
+}
+
+/*logo*/
+.logo-inicial {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 50vh;
+}
+
+/*botões*/
+.login-cadastrar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 15vh;
+}
+
+.meu-botao {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--baixissimo);
+  color: var(--principal);
+  font-weight: bolder;
+  text-align: center;
+  text-decoration: none;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  border: 2px solid var(--secundaria);
+  padding: 7px;
+  min-height: 40px;
+  border-radius: 10px;
+  width: 40vw;
+  min-width: 140px;
+  cursor: pointer;
+
+  font-family: inherit;
+  outline: none;
+}
+/*efeito ao tocar no botão*/
+.meu-botao:active {
+  background-color: var(--secundaria);
+  opacity: 0.8;
+}
+
+/*ajuste para iOS*/
+.meu-botao {
+  -webkit-tap-highlight-color: transparent; /* remove o piscar cinza nativo do iOS */
+}
+
+/*MODAL*/
+/*fundo escuro (invisível por padrão)*/
+.fundo-modal {
+  display: none; /*começa escondido*/
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--preto); /*fundo preto transparente*/
+  z-index: 1000; /*garante que fica na frente de tudo*/
+  justify-content: center;
+  align-items: center;
+}
+
+/*caixinha branca do formulário*/
+
+.conteudo-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--baixissimo);
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  position: relative; /*pra posicionar o botão fechar*/
+}
+
+.conteudo-modal .meu-botao {
+  margin-top: 40px;
+  width: 100%;
+  background-color: var(--principal-baixo);
+  color: var(--baixissimo);
+  border: 2px solid var(--principal-baixo);
+}
+.conteudo-modal .meu-botao:active {
+  background-color: var(--secundaria);
+  border: 2px solid var(--secundaria);
+  opacity: 0.8;
+}
+
+/*botão de fechar (X)*/
+.botao-fechar {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/*CLASSE QUE O JAVASCRIPT ATIVA PARA MOSTRAR O POP-UP*/
+.fundo-modal.mostrar {
+  display: flex; /*muda de none para flex para aparecer centralizado*/
+}

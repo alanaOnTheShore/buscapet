@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastrar Pet - BuscaPet</title>
+    <link rel="stylesheet" href="css/geral.css" />
+    <link rel="stylesheet" href="css/cadastro-pet.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header-cadastro">
+      <div class="logo-area">
+        <img src="img/logo.png" alt="BuscaPet" class="logo-mini" />
+        <h1>BUSCA PET</h1>
+      </div>
+    </header>
+
+    <!-- FORMULÁRIO -->
+    <main class="main-cadastro-pet">
+      <h2>CADASTRE UM PET</h2>
+
+      <form
+        action="/api/animais"
+        method="POST"
+        id="form-cadastrar-pet"
+        enctype="multipart/form-data"
+      >
+        <!-- SITUAÇÃO (Mapeia o ENUM categoria_animal do banco) -->
+        <label for="situacao-pet">Situação *</label>
+        <div class="custom-select">
+          <select id="situacao-pet" name="categoria" required>
+            <option value="" disabled selected hidden>
+              Selecione a situação...
+            </option>
+            <option value="PERDIDO">Pet Perdido</option>
+            <option value="ENCONTRADO">Pet Encontrado</option>
+            <option value="ADOCAO">Pet para Adoção</option>
+          </select>
+        </div>
+
+        <!-- NOME: Obrigatório para Perdido/Adoção, Opcional para Encontrado (Regra do Banco) -->
+        <label for="nome-pet" id="label-nome-pet">Nome do pet *</label>
+        <input
+          type="text"
+          id="nome-pet"
+          name="nome"
+          placeholder="Qual é o nome do pet?"
+          maxlength="80"
+          required
+        />
+
+        <!-- CAMPO DINÂMICO: DETALHES DA FUGA (Só aparece se for PERDIDO) -->
+        <div id="box-detalhes-fuga" style="display: none">
+          <label for="fuga-pet">Detalhes da Fuga *</label>
+          <textarea
+            id="fuga-pet"
+            name="detalhes_fuga"
+            placeholder="Quando, onde e como ele fugiu?"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <!-- SEXO -->
+        <label for="sexo-pet">Sexo *</label>
+        <div class="custom-select">
+          <select id="sexo-pet" name="sexo" required>
+            <option value="" disabled selected hidden>
+              Selecione o sexo...
+            </option>
+            <option value="M">Macho</option>
+            <option value="F">Fêmea</option>
+          </select>
+        </div>
+
+        <!-- DESCRIÇÃO COMPLETA (Tabela animais do banco) -->
+        <label for="descricao-pet">Descrição / Histórico *</label>
+        <textarea
+          id="descricao-pet"
+          name="descricao"
+          placeholder="Diga características marcantes, temperamento, etc. Neste campo você também pode informar se o pet é castrado ou não."
+          rows="4"
+          required
+        ></textarea>
+
+        <!-- UPLOAD DE FOTO (Tabela fotos_animal do banco) -->
+        <label for="foto-pet">Adicionar Foto *</label>
+        <div class="upload-container">
+          <input
+            type="file"
+            id="foto-pet"
+            name="foto"
+            accept="image/*"
+            required
+          />
+          <span class="upload-placeholder">📸 Escolher imagem do pet</span>
+        </div>
+
+        <button type="submit" class="meu-botao btn-salvar-pet">
+          CADASTRAR PET
+        </button>
+      </form>
+    </main>
+
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA -->
+    <nav class="nav-inferior">
+      <a href="home.html" class="nav-item">
+        <img src="/img/icons/home.png" alt="Ícone Home" class="icon" />
+        <span class="label">HOME</span>
+      </a>
+      <a href="cadastrar-animal.html" class="nav-item ativo">
+        <div class="icon">
+          <img src="/img/icons/cadastrar-animal.png" alt="Ícone Cadastrar" />
+        </div>
+        <span class="label">CADASTRAR</span>
+      </a>
+      <a href="meus-pets.html" class="nav-item">
+        <img
+          src="/img/icons/meus-pets.png"
+          alt="Ícone Meus Pets"
+          class="icon"
+        />
+        <span class="label">MEUS PETS</span>
+      </a>
+      <a href="perfil.html" class="nav-item">
+        <img src="/img/icons/perfil.png" alt="Ícone Perfil" class="icon" />
+        <span class="label">PERFIL</span>
+      </a>
+    </nav>
+
+    <!-- INTELIGÊNCIA DE NAVEGAÇÃO E REGRAS DO BANCO -->
+    <script>
+      const selectSituacao = document.getElementById("situacao-pet");
+      const boxFuga = document.getElementById("box-detalhes-fuga");
+      const inputFuga = document.getElementById("fuga-pet");
+      const inputNome = document.getElementById("nome-pet");
+      const labelNome = document.getElementById("label-nome-pet");
+
+      // 1. CAPTURA DO PARAMETRO DA URL (Controla o fluxo vindo do Carrossel vs Barra Inferior)
+      window.addEventListener("DOMContentLoaded", () => {
+        const parametrosUrl = new URLSearchParams(window.location.search);
+        const tipoVindoDoCarrossel = parametrosUrl.get("tipo"); // Pega ?tipo=PERDIDO, etc.
+
+        if (tipoVindoDoCarrossel) {
+          selectSituacao.value = tipoVindoDoCarrossel;
+          atualizarFormularioPorSituacao(tipoVindoDoCarrossel);
+        }
+        // Se não houver parâmetro (clique no botão + da barra inferior),
+        // o formulário cai por padrão na opção "Selecione a situação..." vazia e obrigatória.
+      });
+
+      // 2. CONTROLE DINÂMICO DOS CAMPOS (Respeita as regras e CONSTRAINTS do banco de dados)
+      selectSituacao.addEventListener("change", (e) => {
+        atualizarFormularioPorSituacao(e.target.value);
+      });
+
+      function atualizarFormularioPorSituacao(situacao) {
+        if (situacao === "PERDIDO") {
+          // Ativa a caixa de detalhes de fuga (Obrigatória no banco para Perdidos)
+          boxFuga.style.display = "block";
+          inputFuga.required = true;
+
+          // Nome é obrigatório
+          labelNome.innerText = "Nome do pet *";
+          inputNome.required = true;
+        } else if (situacao === "ADOCAO") {
+          boxFuga.style.display = "none";
+          inputFuga.required = false;
+          inputFuga.value = "";
+
+          // Nome é obrigatório
+          labelNome.innerText = "Nome do pet *";
+          inputNome.required = true;
+        } else if (situacao === "ENCONTRADO") {
+          boxFuga.style.display = "none";
+          inputFuga.required = false;
+          inputFuga.value = "";
+
+          // Regra ck_animais_nome: Encontrados podem não ter nome registrado
+          labelNome.innerText = "Nome do pet (Opcional)";
+          inputNome.required = false;
+        }
+      }
+    </script>
+  </body>
+</html>

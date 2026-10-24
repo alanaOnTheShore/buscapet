@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meus Pets - BuscaPet</title>
+    <link rel="stylesheet" href="css/geral.css" />
+    <link rel="stylesheet" href="css/meus-pets.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header-meus-pets">
+      <div class="logo-area">
+        <img src="img/logo.png" alt="BuscaPet" class="logo-mini" />
+        <h1>BUSCA PET</h1>
+      </div>
+    </header>
+
+    <!-- LISTAGEM -->
+    <main class="main-meus-pets">
+      <h2>MEUS PETS CADASTRADOS</h2>
+      <p class="subtitulo-lista">
+        Gerencie os anúncios que você publicou na plataforma.
+      </p>
+
+      <section class="lista-meus-pets-container">
+        <!-- Pet 1 (Exemplo Cadastrado) -->
+        <article class="card-meu-pet" data-id="1">
+          <div class="meu-pet-foto">
+            <img src="/img/anuncios/pet1.png" alt="Falcão" />
+          </div>
+          <div class="meu-pet-info">
+            <div class="meu-pet-topo">
+              <span class="meu-pet-nome">Falcão</span>
+              <img
+                src="/img/icon-sexo/masc.png"
+                alt="Macho"
+                class="genero-pet-icon"
+              />
+            </div>
+            <span class="tag-status status-perdido">Perdido</span>
+
+            <!-- Botões de Gerenciamento do Pet -->
+            <div class="meu-pet-acoes">
+              <a href="editar-animal.html?id=1" class="btn-acao-pet btn-editar"
+                >Editar</a
+              >
+              <button type="button" class="btn-acao-pet btn-deletar-pet">
+                Excluir
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Pet 2 (Exemplo Cadastrado) -->
+        <article class="card-meu-pet" data-id="2">
+          <div class="meu-pet-foto">
+            <img src="/img/anuncios/pet2.png" alt="Fabi" />
+          </div>
+          <div class="meu-pet-info">
+            <div class="meu-pet-topo">
+              <span class="meu-pet-nome">Fabi</span>
+              <img
+                src="/img/icon-sexo/fem.png"
+                alt="Fêmea"
+                class="genero-pet-icon"
+              />
+            </div>
+            <span class="tag-status status-adocao">Adoção</span>
+
+            <div class="meu-pet-acoes">
+              <a href="" class="btn-acao-pet btn-editar">Editar</a>
+              <button type="button" class="btn-acao-pet btn-deletar-pet">
+                Excluir
+              </button>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA -->
+    <nav class="nav-inferior">
+      <a href="home.html" class="nav-item">
+        <img src="/img/icons/home.png" alt="Ícone Home" class="icon" />
+        <span class="label">HOME</span>
+      </a>
+      <a href="cadastro-pet.html" class="nav-item">
+        <img
+          src="/img/icons/cadastrar-animal.png"
+          alt="Ícone Cadastrar"
+          class="icon"
+        />
+        <span class="label">CADASTRAR</span>
+      </a>
+      <a href="meus-pets.html" class="nav-item ativo">
+        <img
+          src="/img/icons/meus-pets.png"
+          alt="Ícone Meus Pets"
+          class="icon"
+        />
+        <span class="label">MEUS PETS</span>
+      </a>
+      <a href="perfil.html" class="nav-item">
+        <img src="/img/icons/perfil.png" alt="Ícone Perfil" class="icon" />
+        <span class="label">PERFIL</span>
+      </a>
+    </nav>
+
+    <!-- LÓGICA DE EXCLUSÃO SIMULADA -->
+    <script>
+      // Seleciona todos os botões de excluir pet da lista
+      const botoesDeletar = document.querySelectorAll(".btn-deletar-pet");
+
+      botoesDeletar.forEach((botao) => {
+        botao.addEventListener("click", (e) => {
+          // Encontra o card pai (article) correspondente ao botão clicado
+          const cardPet = e.target.closest(".card-meu-pet");
+          const nomePet = cardPet.querySelector(".meu-pet-nome").innerText;
+          const idPet = cardPet.getAttribute("data-id");
+
+          // Confirmação de segurança antes de apagar do banco
+          const confirmar = confirm(
+            `Tem certeza que deseja remover o anúncio do pet "${nomePet}" permanentemente?`
+          );
+
+          if (confirmar) {
+            // No futuro com o Back-end integrado ao banco de dados:
+            // fetch(`/api/animais/${idPet}`, { method: 'DELETE' })
+
+            // Simulação visual: remove o card da tela de forma suave
+            cardPet.style.opacity = "0";
+            cardPet.style.transform = "translateX(50px)";
+            cardPet.style.transition = "all 0.3s ease";
+
+            setTimeout(() => {
+              cardPet.remove();
+              alert(
+                `Anúncio de "${nomePet}" excluído com sucesso do banco de dados!`
+              );
+            }, 300);
+          }
+        });
+      });
+      const botoesEditar = document.querySelectorAll(".btn-editar");
+
+      botoesEditar.forEach((botao) => {
+        botao.addEventListener("click", (e) => {
+          e.preventDefault();
+          alert("Essa funcionalidade está em construção!");
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inicio</title>
+    <link rel="stylesheet" href="css/geral.css" />
+    <link rel="stylesheet" href="css/home.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header-home">
+      <div class="logo-area">
+        <img src="img/logo.png" alt="BuscaPet" class="logo-mini" />
+        <div>
+          <h1>BUSCA PET</h1>
+          <h4>BUSQUE, CADASTRE OU ADOTE.</h4>
+          <p>Com o Busca Pet é Fácil!</p>
+        </div>
+      </div>
+    </header>
+    <!-- CARROSSEL / BANNER DE DESTAQUE (Direciona para cadastros) -->
+    <section class="carrossel-container">
+      <div class="carrossel-wrapper">
+        <!-- Card do Carrossel 1 (Achou um pet?) -->
+        <div class="carrossel-item item-laranja">
+          <!--ACHOU-->
+          <div class="carrossel-texto">
+            <h3>ACHOU UM PET?</h3>
+            <p>Cadastre-o para ajudar o dono a encontrá-lo.</p>
+            <a href="cadastro-pet.html?tipo=ENCONTRADO" class="btn-carrossel"
+              >Cadastrar</a
+            >
+          </div>
+          <div>
+            <img
+              src="/img/carrossel/01.png"
+              alt="Imagem Cadastrar"
+              class="carrossel-img-placeholder"
+            />
+          </div>
+        </div>
+        <!-- Você pode adicionar mais cards de carrossel aqui ao lado -->
+
+        <!-- Card do Carrossel 2 (Cadastrar para adoção.) -->
+        <div class="carrossel-item item-laranja">
+          <!--ADOÇÃO-->
+          <div class="carrossel-texto">
+            <h3>QUER COLOCAR PARA ADOÇÃO?</h3>
+            <p>Nos forneça as informações necessárias que ajudamos você!</p>
+            <a href="cadastro-pet.html?tipo=ADOCAO" class="btn-carrossel"
+              >Cadastrar</a
+            >
+          </div>
+          <div>
+            <img
+              src="/img/carrossel/02.png"
+              alt="Imagem Colocar Adoção"
+              class="carrossel-img-placeholder"
+            />
+          </div>
+        </div>
+
+        <!-- Card do Carrossel 3 (Perdeu um pet?) -->
+        <div class="carrossel-item item-laranja">
+          <!--PERDEU-->
+          <div class="carrossel-texto">
+            <h3>PERDEU SEU PET?</h3>
+            <p>Cadastre-o e nós publicamos o cartaz para você!</p>
+            <a href="cadastro-pet.html?tipo=PERDIDO" class="btn-carrossel"
+              >Cadastrar</a
+            >
+          </div>
+          <div>
+            <img
+              src="/img/carrossel/03.png"
+              alt="Imagem Perdidos"
+              class="carrossel-img-placeholder"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTROS POR CATEGORIA (mapeia o ENUM categoria_animal do banco) -->
+    <section class="filtros-container">
+      <p class="titulo-sessao">Filtre por categoria</p>
+      <div class="filtros-scroll">
+        <button class="btn-filtro ativo" data-categoria="TODOS">Todos</button>
+        <button class="btn-filtro" data-categoria="PERDIDO">Perdidos</button>
+        <button class="btn-filtro" data-categoria="ENCONTRADO">
+          Encontrados
+        </button>
+        <button class="btn-filtro" data-categoria="ADOCAO">Adoção</button>
+      </div>
+    </section>
+
+    <!-- GRADE DE CARDS DOS ANIMAIS (Conecta com tabelas 'animais' e 'fotos_animal') -->
+    <main class="grid-animais">
+      <!-- Card Pet 1 -->
+      <article class="card-pet">
+        <div class="foto-pet-container">
+          <img src="/img/anuncios/pet1.png" alt="Falcão" class="foto-pet" />
+        </div>
+        <div class="info-pet">
+          <div class="linha-topo">
+            <span class="nome-pet">Falcão</span>
+            <img
+              src="/img/icon-sexo/masc.png"
+              alt="Macho"
+              class="genero-pet-icon"
+            />
+          </div>
+          <p class="tag-status status-perdido">Perdido</p>
+        </div>
+      </article>
+
+      <!-- Card Pet 2 -->
+      <article class="card-pet">
+        <div class="foto-pet-container">
+          <img src="/img/anuncios/pet2.png" alt="Fabi" class="foto-pet" />
+        </div>
+        <div class="info-pet">
+          <div class="linha-topo">
+            <span class="nome-pet">Fabi</span>
+            <img
+              src="/img/icon-sexo/fem.png"
+              alt="Femea"
+              class="genero-pet-icon"
+            />
+          </div>
+          <p class="tag-status status-adocao">Adoção</p>
+        </div>
+      </article>
+
+      <!-- Card Pet 3 -->
+      <article class="card-pet">
+        <div class="foto-pet-container">
+          <img src="/img/anuncios/pet3.png" alt="Stephany" class="foto-pet" />
+        </div>
+        <div class="info-pet">
+          <div class="linha-topo">
+            <span class="nome-pet">Stephany</span>
+            <img
+              src="/img/icon-sexo/fem.png"
+              alt="Femea"
+              class="genero-pet-icon"
+            />
+          </div>
+          <p class="tag-status status-encontrado">Encontrado</p>
+        </div>
+      </article>
+
+      <!-- Adicione mais cards dinamicamente aqui -->
+    </main>
+
+    <!-- MODAL DE DETALHES DO PET -->
+    <section id="modal-pet" class="fundo-modal">
+      <div class="conteudo-modal modal-detalhes-pet">
+        <!-- Botão de Fechar (X) -->
+        <button id="btn-fechar-pet" class="botao-fechar">&times;</button>
+
+        <!-- Conteúdo dinâmico do animal -->
+        <div class="detalhes-foto-container">
+          <img src="" alt="Foto do Pet" id="modal-pet-foto" />
+        </div>
+
+        <div class="detalhes-info">
+          <div class="modal-linha-topo">
+            <h2 id="modal-pet-nome">Nome do Pet</h2>
+            <img
+              src=""
+              alt="Gênero"
+              id="modal-pet-genero"
+              class="genero-pet-icon"
+            />
+          </div>
+
+          <span id="modal-pet-status" class="tag-status">Status</span>
+
+          <div class="modal-descricao-box">
+            <h4>História / Detalhes:</h4>
+            <p id="modal-pet-descricao">Descrição do animal...</p>
+          </div>
+
+          <!-- Caixa extra que só vai aparecer via JS se o pet for 'PERDIDO' -->
+          <div
+            id="modal-box-fuga"
+            class="modal-descricao-box box-alerta"
+            style="display: none"
+          >
+            <h4>Detalhes da Fuga:</h4>
+            <p id="modal-pet-fuga">Detalhes da fuga aqui...</p>
+          </div>
+
+          <!-- Botão que direciona para o WhatsApp do tutor/ONG (Coluna telefone do banco) -->
+          <a
+            href="#"
+            target="_blank"
+            id="modal-pet-whatsapp"
+            class="meu-botao btn-whatsapp"
+          >
+            ENTRAR EM CONTATO VIA WHATSAPP
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA (Estilo Mobile Application) -->
+    <nav class="nav-inferior">
+      <a href="home.html" class="nav-item ativo">
+        <img src="/img/icons/home.png" alt="Ícone Home" class="icon" />
+        <span class="label">HOME</span>
+      </a>
+      <a href="cadastro-pet.html" class="nav-item">
+        <img
+          src="/img/icons/cadastrar-animal.png"
+          alt="Ícone Cadastrar"
+          class="icon"
+        />
+        <span class="label">CADASTRAR</span>
+      </a>
+      <a href="meus-pets.html" class="nav-item">
+        <img
+          src="/img/icons/meus-pets.png"
+          alt="Ícone Meus Pets"
+          class="icon"
+        />
+        <span class="label">MEUS PETS</span>
+      </a>
+      <a href="perfil.html" class="nav-item">
+        <img src="/img/icons/perfil.png" alt="Ícone Perfil" class="icon" />
+        <span class="label">PERFIL</span>
+      </a>
+    </nav>
+
+    <script>
+      // 1. CAPTURA DOS ELEMENTOS DA PÁGINA (Declarados apenas UMA vez no topo)
+      const botoesFiltro = document.querySelectorAll(".btn-filtro");
+      const cardsPet = document.querySelectorAll(".card-pet");
+      const modalPet = document.getElementById("modal-pet");
+      const btnFecharPet = document.getElementById("btn-fechar-pet");
+
+      // BANCO DE DADOS FICTÍCIO
+      const dadosPetsSimulados = {
+        Falcão: {
+          foto: "/img/anuncios/pet1.png",
+          genero: "/img/icon-sexo/masc.png",
+          categoria: "PERDIDO",
+          statusTexto: "Perdido",
+          statusClasse: "status-perdido",
+          descricao:
+            "Falcão fugiu de casa durante os fogos de artifício. Ele é muito dócil mas está assustado.",
+          detalhesFuga:
+            "Fugiu nas proximidades do bairro Central no dia 22/10 à noite.",
+          whatsapp: "5547999999999",
+        },
+        Fabi: {
+          foto: "/img/anuncios/pet2.png",
+          genero: "/img/icon-sexo/fem.png",
+          categoria: "ADOCAO",
+          statusTexto: "Para Adoção",
+          statusClasse: "status-adocao",
+          descricao:
+            "Fabi foi resgatada das ruas, já está vacinada, castrada e pronta para receber um novo lar cheio de amor.",
+          detalhesFuga: null,
+          whatsapp: "5547888888888",
+        },
+        Stephany: {
+          foto: "/img/anuncios/pet3.png",
+          genero: "/img/icon-sexo/fem.png",
+          categoria: "ENCONTRADO",
+          statusTexto: "Encontrado",
+          statusClasse: "status-encontrado",
+          descricao:
+            "Encontramos essa cachorrinha na praça da matriz. Está bem cuidada, parece ter dono.",
+          detalhesFuga: null,
+          whatsapp: "5547777777777",
+        },
+      };
+
+      // 2. LÓGICA DOS FILTROS
+      botoesFiltro.forEach((botao) => {
+        botao.addEventListener("click", () => {
+          // Alterna a classe ativa visualmente entre os botões
+          document.querySelector(".btn-filtro.ativo").classList.remove("ativo");
+          botao.classList.add("ativo");
+
+          // Pega a categoria do botão clicado
+          const categoriaSelecionada = botao.getAttribute("data-categoria");
+
+          // Filtra os cards na tela
+          cardsPet.forEach((card) => {
+            const statusCardText = card
+              .querySelector(".tag-status")
+              .innerText.toLowerCase();
+
+            if (categoriaSelecionada === "TODOS") {
+              card.style.display = "flex";
+            } else if (
+              categoriaSelecionada === "PERDIDO" &&
+              statusCardText === "perdido"
+            ) {
+              card.style.display = "flex";
+            } else if (
+              categoriaSelecionada === "ADOCAO" &&
+              statusCardText === "adoção"
+            ) {
+              card.style.display = "flex";
+            } else if (
+              categoriaSelecionada === "ENCONTRADO" &&
+              statusCardText === "encontrado"
+            ) {
+              card.style.display = "flex";
+            } else {
+              card.style.display = "none"; // Esconde os cards que não batem com o filtro
+            }
+          });
+        });
+      });
+
+      // 3. LÓGICA DE ABERTURA DO MODAL
+      cardsPet.forEach((card) => {
+        card.addEventListener("click", () => {
+          const nomePet = card.querySelector(".nome-pet").innerText;
+          const dados = dadosPetsSimulados[nomePet];
+
+          if (dados) {
+            // Alimenta os elementos do modal com os dados do pet clicado
+            document.getElementById("modal-pet-foto").src = dados.foto;
+            document.getElementById("modal-pet-nome").innerText = nomePet;
+            document.getElementById("modal-pet-genero").src = dados.genero;
+            document.getElementById("modal-pet-descricao").innerText =
+              dados.descricao;
+
+            // Atualiza o texto e a cor da tag de status
+            const tagStatus = document.getElementById("modal-pet-status");
+            tagStatus.innerText = dados.statusTexto;
+            tagStatus.className = `tag-status ${dados.statusClasse}`;
+
+            // Gerencia os detalhes da fuga (Regra do Banco de Dados)
+            const boxFuga = document.getElementById("modal-box-fuga");
+            if (dados.categoria === "PERDIDO" && dados.detalhesFuga) {
+              document.getElementById("modal-pet-fuga").innerText =
+                dados.detalhesFuga;
+              boxFuga.style.display = "block";
+            } else {
+              boxFuga.style.display = "none";
+            }
+
+            // CORRIGIDO: Link de API do WhatsApp gerado com cifrão correto ($)
+            document.getElementById(
+              "modal-pet-whatsapp"
+            ).href = `https://whatsapp.com{dados.whatsapp}&text=Olá! Vi o anúncio do pet ${nomePet} no BuscaPet e gostaria de obter mais informações.`;
+
+            // Abre o modal adicionando a classe de estilo
+            modalPet.classList.add("mostrar");
+          }
+        });
+      });
+
+      // 4. LÓGICA DE FECHAMENTO DO MODAL
+      btnFecharPet.addEventListener("click", () => {
+        modalPet.classList.remove("mostrar");
+      });
+
+      // Fecha o modal ao clicar na área escura de fora
+      modalPet.addEventListener("click", (event) => {
+        if (event.target === modalPet) {
+          modalPet.classList.remove("mostrar");
+        }
+      });
+    </script>
+  </body>
+</html>

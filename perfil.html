@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meu Perfil - BuscaPet</title>
+    <link rel="stylesheet" href="css/geral.css" />
+    <link rel="stylesheet" href="css/perfil.css" />
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header-perfil">
+      <div class="logo-area">
+        <img src="img/logo.png" alt="BuscaPet" class="logo-mini" />
+        <h1>BUSCA PET</h1>
+      </div>
+    </header>
+
+    <main class="main-perfil">
+      <!-- AVATAR E APRESENTAÇÃO -->
+      <section class="perfil-usuario-topo">
+        <div class="avatar-placeholder">🐾</div>
+        <!-- Dados dinâmicos do banco de dados -->
+        <h2 id="perfil-nome">Carregando nome...</h2>
+        <span id="perfil-badge-tipo" class="badge-tipo">PESSOA</span>
+      </section>
+
+      <!-- FORMULÁRIO DE EXIBIÇÃO / EDIÇÃO DE DADOS -->
+      <section class="perfil-dados-container">
+        <h3>Meus Dados</h3>
+
+        <form id="form-perfil" action="/api/usuarios/atualizar" method="POST">
+          <label for="nome-perfil">Nome Completo / Nome da ONG:</label>
+          <input
+            type="text"
+            id="nome-perfil"
+            name="nome"
+            maxlength="120"
+            required
+          />
+
+          <label for="email-perfil">E-mail (Não alterável):</label>
+          <!-- disabled impede a alteração, já que e-mail é a chave UNIQUE no seu banco -->
+          <input type="email" id="email-perfil" name="email" disabled />
+
+          <label for="telefone-perfil">Telefone (WhatsApp):</label>
+          <input
+            type="tel"
+            id="telefone-perfil"
+            name="telefone"
+            maxlength="20"
+            placeholder="(00) 00000-0000"
+            required
+          />
+
+          <button type="submit" class="meu-botao btn-salvar-perfil">
+            SALVAR ALTERAÇÕES
+          </button>
+        </form>
+      </section>
+
+      <!-- AÇÕES DA CONTA -->
+      <section class="perfil-acoes">
+        <!-- Botão de Sair (Logout) -->
+        <a href="index.html" id="btn-logout" class="btn-perfil-acao">
+          <!-- <span class="acao-icone"></span> -->
+          <span class="acao-texto">Sair da Conta</span>
+        </a>
+
+        <!-- Botão de Excluir Conta (Mapeia o DELETE CASCADE no banco) -->
+        <a href="#" id="btn-excluir-conta" class="btn-perfil-acao acao-perigo">
+          <span class="acao-icone">⚠️</span>
+          <span class="acao-texto">Excluir Minha Conta</span>
+        </a>
+      </section>
+
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA -->
+    <nav class="nav-inferior">
+      <a href="home.html" class="nav-item">
+        <img src="/img/icons/home.png" alt="Ícone Home" class="icon" />
+        <span class="label">HOME</span>
+      </a>
+      <a href="cadastro-pet.html" class="nav-item">
+        <img
+          src="/img/icons/cadastrar-animal.png"
+          alt="Ícone Cadastrar"
+          class="icon"
+        />
+        <span class="label">CADASTRAR</span>
+      </a>
+      <a href="meus-pets.html" class="nav-item">
+        <img
+          src="/img/icons/meus-pets.png"
+          alt="Ícone Meus Pets"
+          class="icon"
+        />
+        <span class="label">MEUS PETS</span>
+      </a>
+      <a href="perfil.html" class="nav-item ativo">
+        <img src="/img/icons/perfil.png" alt="Ícone Perfil" class="icon" />
+        <span class="label">PERFIL</span>
+      </a>
+    </nav>
+
+    <!-- SIMULAÇÃO DE DADOS DO BANCO -->
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        // Simulação dos dados que viriam do SELECT na tabela 'usuarios' do banco
+        const usuarioLogadoDoBanco = {
+          nome: "Instituto Amigos de Patas",
+          email: "contato@amigosdepatas.org",
+          telefone: "(47) 99999-8888",
+          tipo: "ONG", // Pode ser 'PESSOA' ou 'ONG'
+        };
+
+        // Alimenta o Front-end de forma dinâmica
+        document.getElementById("perfil-nome").innerText =
+          usuarioLogadoDoBanco.nome;
+        document.getElementById("nome-perfil").value =
+          usuarioLogadoDoBanco.nome;
+        document.getElementById("email-perfil").value =
+          usuarioLogadoDoBanco.email;
+        document.getElementById("telefone-perfil").value =
+          usuarioLogadoDoBanco.telefone;
+
+        // Configura a Badge do ENUM
+        const badge = document.getElementById("perfil-badge-tipo");
+        badge.innerText = usuarioLogadoDoBanco.tipo;
+        if (usuarioLogadoDoBanco.tipo === "ONG") {
+          badge.style.backgroundColor = "var(--principal)";
+          badge.style.color = "var(--branco)";
+        } else {
+          badge.style.backgroundColor = "var(--secundaria-baixo)";
+          badge.style.color = "var(--principal)";
+        }
+      });
+
+      // Evento de salvar alterações
+      document
+        .getElementById("form-perfil")
+        .addEventListener("submit", function (e) {
+          // Quando tiver o back-end, remover o preventDefault() para enviar os dados reais
+          e.preventDefault();
+          alert("Alterações salvas com sucesso! Dados atualizados no banco.");
+        });
+
+      // Lógica para o botão de EXCLUIR Conta
+      document.getElementById("btn-excluir-conta").addEventListener("click", () => {
+        // Exibe uma caixa de confirmação nativa do navegador
+        const confirmou = confirm("🚨 ATENÇÃO: Tem certeza que deseja excluir sua conta?\n\nEsta ação é irreversível. Todos os seus dados e pets cadastrados serão apagados permanentemente.");
+        
+        if (confirmou) {
+          // No futuro com o Back-end, fazer um disparador de exclusão:
+          // fetch('/api/usuarios/deletar', { method: 'DELETE' })
+          
+          alert("Conta excluída com sucesso. Esperamos ver você de volta em breve!");
+          window.location.href = "index.html"; // Redireciona para a tela de login inicial
+        }
+      });
+    </script>
+  </body>
+</html>
