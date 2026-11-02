@@ -82,7 +82,8 @@ buscapet/
 ````
 
 ## 🚀 Como Executar o Projeto Localmente:
-- Pré-requisitosNode.js instalado na máquina.
+### Pré-requisitos
+- Node.js instalado na máquina.
 - Git configurado.
 ### Passo a Passo
 1. Clonar o repositório:  
@@ -99,9 +100,9 @@ npm test
 **Bash**  
 npm start  
 ## 👥 Equipe de Desenvolvimento
-- Alana Paola Silva Nascimento — Scrum Master, Documentadora & Full-stack
+- Alana Paola Silva Nascimento — Scrum Master, Documentadora & Front-end
 - Hanna Clara Pereira da Silva — Desenvolvedora Front-end & UI/UX 
-- Hellen Fernanda Lunardi Gilli — Desenvolvedora Full-stack
+- Hellen Fernanda Lunardi Gilli — Desenvolvedora Back-end
 - Rita de Cássia da Silva Borges — Engenheira de Banco de Dados & Back-end
 ## 📄 Licença
 *Este projeto foi desenvolvido para fins acadêmicos no curso de Análise e Desenvolvimento de Sistemas (UNIVALI).*
