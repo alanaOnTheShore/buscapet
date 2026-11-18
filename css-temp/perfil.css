@@ -1,0 +1,182 @@
+css body {
+  background-color: var(--baixissimo);
+  padding-bottom: 95px;
+}
+
+/* HEADER DA TELA */
+.header-perfil {
+  background-color: var(--branco);
+  padding: 15px;
+  border-bottom: 1px solid var(--secundaria-baixo);
+}
+
+.header-perfil .logo-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-mini {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.header-perfil h1 {
+  font-size: 1.2rem;
+  color: var(--principal);
+  font-weight: 900;
+}
+
+/* CONTAINER PRINCIPAL */
+.main-perfil {
+  padding: 20px;
+  display: flex;
+  padding-bottom: 100px;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* SEÇÃO TOPO (AVATAR) */
+.perfil-usuario-topo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: var(--branco);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(65, 28, 87, 0.03);
+}
+
+.avatar-placeholder {
+  width: 70px;
+  height: 70px;
+  background-color: var(--secundaria-baixo);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin-bottom: 12px;
+  border: 2px solid var(--secundaria);
+}
+
+.perfil-usuario-topo h2 {
+  font-size: 1.25rem;
+  color: var(--principal);
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+/* Badge indicando o tipo de conta (ENUM do banco) */
+.badge-tipo {
+  font-size: 11px;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* SEÇÃO DE DADOS DO FORMULÁRIO */
+.perfil-dados-container {
+  background-color: var(--branco);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(65, 28, 87, 0.03);
+}
+
+.perfil-dados-container h3 {
+  font-size: 1rem;
+  color: var(--principal);
+  margin-bottom: 15px;
+  font-weight: bold;
+  border-bottom: 2px solid var(--baixissimo);
+  padding-bottom: 8px;
+}
+
+/* Deixa o input de e-mail desativado cinza para indicar que é bloqueado */
+input:disabled {
+  background-color: #f0f0f0;
+  color: #777;
+  border-color: #ddd;
+  cursor: not-allowed;
+}
+
+/* BOTÃO DE SALVAR */
+.btn-salvar-perfil {
+  width: 100%;
+  min-height: 48px;
+  background-color: var(--principal);
+  color: var(--branco);
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.btn-salvar-perfil:active {
+  opacity: 0.9;
+}
+
+/* SEÇÃO DE AÇÕES (MENU INFERIOR DO PERFIL) */
+.perfil-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Espaço entre o botão de Sair e Excluir */
+  margin-top: 10px;
+  z-index: 10;
+}
+
+.btn-perfil-acao {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  min-height: 50px;
+  padding: 0 15px;
+  background-color: var(--branco);
+  border: 1px solid var(--secundaria-baixo);
+  border-radius: 8px;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(
+    --principal
+  ); /* Garante a cor roxa padrão para o texto de logout */
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.btn-perfil-acao:active {
+  background-color: var(--baixissimo);
+}
+
+/* Estilo de Alerta/Perigo para a exclusão da conta */
+.btn-perfil-acao.acao-perigo {
+  border-color: rgba(
+    195,
+    0,
+    0,
+    0.2
+  ); /* Borda suave baseada na sua cor --aviso */
+  color: var(--aviso); /* Texto em vermelho conforme seu geral.css */
+}
+
+.btn-perfil-acao.acao-perigo:active {
+  background-color: #fff2f2; /* Fundo vermelho bem clarinho ao clicar */
+}
+
+.acao-icone {
+  font-size: 18px;
+}
+
+.acao-texto {
+  flex: 1;
+}

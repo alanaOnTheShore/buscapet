@@ -1,0 +1,374 @@
+body {
+  background-color: var(--baixissimo);
+  padding: 0 0 85px 0; /* Espaço na parte de baixo para a barra fixa não cobrir os cards */
+}
+
+/* HEADER */
+.header-home {
+  background-color: var(--branco);
+  padding: 15px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 0 4px 10px rgba(65, 28, 87, 0.05);
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo-mini {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.header-home h1 {
+  font-size: 1.4rem;
+  color: var(--principal);
+  margin: 0;
+  font-weight: 900;
+}
+
+.header-home h4 {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--principal);
+}
+
+.header-home p {
+  font-size: 12px;
+  color: var(--principal);
+  margin-top: 2px;
+}
+
+/* CARROSSEL / DESTAQUE */
+.carrossel-container {
+  padding: 20px 15px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.carrossel-wrapper {
+  display: flex;
+  gap: 15px;
+}
+
+.carrossel-item {
+  min-width: 85vw;
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  scroll-snap-align: start;
+
+  /*vai ajustar a imagem*/
+  position: relative;
+  overflow: hidden;
+}
+
+/* Usa a cor laranja secundária do seu geral.css */
+.item-laranja {
+  background-color: var(--secundaria-baixo);
+  color: var(--principal);
+}
+
+.carrossel-texto {
+  position: relative;
+  z-index: 2; /* deixa o texto por cima do círculo se eles se encostarem */
+  max-width: 40vw; /* evita que o texto invada a área da imagem */
+}
+
+.carrossel-texto h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  font-weight: bolder;
+}
+
+.carrossel-texto p {
+  margin: 0 0 15px 0;
+  font-size: 13px;
+  color: var(--principal);
+}
+
+.btn-carrossel {
+  display: inline-block;
+  background: var(--branco);
+  color: var(--principal);
+  padding: 8px 18px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.carrossel-img-placeholder {
+  position: absolute;
+  right: -15px; /* empurra o círculo para a direita, escondendo parte dele para fora */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 150px;
+  height: 150px;
+  background-color: var(--principal-baixo);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+/* FILTROS POR CATEGORIA */
+.filtros-container {
+  padding: 0 15px;
+  margin-bottom: 10px;
+}
+
+.titulo-sessao {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--principal);
+  margin-bottom: 10px;
+}
+
+.filtros-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+/* Oculta barras de rolagem nativas para um visual de App mais limpo */
+.filtros-scroll::-webkit-scrollbar,
+.carrossel-container::-webkit-scrollbar {
+  display: none;
+}
+
+.btn-filtro {
+  background-color: var(--branco);
+  color: var(--principal);
+  border: 1px solid var(--secundaria);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+/* Estado ativo do filtro combinando suas cores */
+.btn-filtro.ativo {
+  background-color: var(--secundaria);
+}
+
+/* CARDS DOS PETS */
+.grid-animais {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  padding: 15px;
+}
+
+.card-pet {
+  background-color: var(--branco);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(65, 28, 87, 0.04);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 166, 88, 0.2); /* Borda bem suave com a cor secundária */
+}
+
+.foto-pet-container {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-color: var(--secundaria-baixo);
+}
+
+.foto-pet {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info-pet {
+  padding: 12px;
+}
+
+.linha-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.nome-pet {
+  font-weight: bold;
+  font-size: 15px;
+  color: var(--principal);
+}
+
+.genero-pet-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  align-self: center;
+}
+
+.tag-status {
+  margin: 0;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Cores de status baseadas na situação */
+.status-perdido {
+  color: var(--aviso);
+}
+.status-encontrado {
+  color: var(--verde);
+}
+.status-adocao {
+  color: var(--principal);
+}
+
+/* MODAL DETALHES PETS */
+.modal-detalhes-pet {
+  padding: 0;
+  overflow: hidden;
+  max-height: 90%;
+  max-width: 450px;
+  width: 90%;
+  border-radius: 15px;
+  background-color: var(--baixissimo);
+
+  /*scroll do modal*/
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /*melhora o comportamento em mobile*/
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-detalhes-pet .botao-fechar {
+  top: 30px;
+  right: 30px;
+  background-color: var(--baixissimo);
+  border-radius: 10%;
+  padding: 5px;
+}
+
+.detalhes-foto-container {
+  width: 100%;
+  aspect-ratio: 16 / 10; /* Foto em proporção de paisagem elegante */
+  background-color: var(--secundaria-baixo);
+}
+
+.detalhes-foto-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detalhes-info {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-linha-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.modal-linha-topo h2 {
+  color: var(--principal);
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.modal-descricao-box {
+  margin-top: 15px;
+  background-color: var(--baixissimo);
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 4px solid var(--secundaria);
+}
+
+.modal-descricao-box h4 {
+  font-size: 14px;
+  color: var(--principal);
+  margin-bottom: 5px;
+}
+
+.modal-descricao-box p {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--texto-escuro);
+}
+
+/* Estilo para a caixa de fuga se o pet for PERDIDO */
+.box-alerta {
+  border-left-color: var(--aviso);
+  background-color: #fff2f2;
+}
+
+/* Botão customizado do WhatsApp */
+.btn-whatsapp {
+  margin-top: 20px;
+  background-color: #25d366; /* Verde oficial do WhatsApp */
+  color: var(--branco);
+  border: none;
+  font-size: 14px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-whatsapp:active {
+  background-color: #128c7e;
+  opacity: 1;
+}
+
+/* Configuração para exibir o modal */
+.fundo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Fundo escurecido semi-transparente */
+  z-index: 2000;
+
+  /* Esconde o modal por padrão */
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Quando receber a classe 'mostrar' via JavaScript, ele se torna visível */
+.fundo-modal.mostrar {
+  display: flex;
+}
+
+/* Garante o cursor de clique nos cards para o usuário saber que são clicáveis */
+.card-pet {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.card-pet:active {
+  transform: scale(0.98); /* Pequeno efeito de clique afundando no mobile */
+}
+
+

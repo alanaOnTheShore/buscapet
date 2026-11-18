@@ -1,0 +1,74 @@
+.main-redefine {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+.main-redefine form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-top: 40px;
+  box-sizing: border-box;
+}
+
+.main-redefine h2 {
+  align-self: center;
+  color: var(--principal);
+  margin-bottom: 10px;
+}
+
+.main-redefine p {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Customização dos Inputs da Tela */
+.main-redefine input[type="email"],
+.main-redefine input[type="password"] {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px;
+  border: 1px solid var(--secundaria);
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-family: inherit;
+  margin-bottom: 15px;
+}
+
+.novo-botao {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+
+  background-color: var(--branco);
+  color: var(--principal);
+  font-weight: bolder;
+  text-align: center;
+  text-decoration: none;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  border: 2px solid var(--secundaria);
+  padding: 7px;
+  min-height: 40px;
+  border-radius: 10px;
+  width: 40vw;
+  min-width: 160px;
+  cursor: pointer;
+  margin-top: 20px;
+
+  font-family: inherit;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.novo-botao:active {
+  background-color: var(--secundaria);
+  opacity: 0.8;
+}

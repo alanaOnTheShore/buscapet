@@ -1,0 +1,120 @@
+:root {
+  --branco: #ffffff;
+  --preto: #000000;
+  --verde: #008543;
+  --baixissimo: #fff8f2;
+  --principal: #411c57;
+  --principal-baixo: #6a515b;
+  --secundaria: #ffa658;
+  --secundaria-baixo: #ffcfa5;
+  --aviso: #c30000;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  color: var(--principal);
+}
+
+p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--principal);
+}
+
+/*reset dos input do web app todo*/
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="tel"],
+select {
+  margin-bottom: 20px;
+  width: 100%;
+  min-height: 48px; /*bom para mobile*/
+  padding: 10px;
+  border: 1px solid var(--secundaria);
+  border-radius: 6px;
+  box-sizing: border-box; /*evita que o padding quebre a largura*/
+  font-family: inherit;
+  background-color: #fff; /*consistência de fundo no select do iOS/Android*/
+}
+
+/*espaçamento padrão para labels*/
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bolder;
+}
+
+/*botão de fechar (X)*/
+.botao-fechar {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* BARRA DE NAVEGAÇÃO INFERIOR FIXA */
+.nav-inferior {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 72px;
+  background-color: var(--branco);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -4px 10px rgba(65, 28, 87, 0.08);
+  box-sizing: border-box;
+  z-index: 1000;
+  border-top: 1px solid var(--secundaria-baixo);
+  padding: 0 10px;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--principal-baixo);
+  font-size: 11px;
+  font-weight: 500;
+  flex: 1; /* Distribui o espaço igualmente entre os botões */
+  height: 100%;
+}
+
+/*aqui está o efeito de circulo*/
+.nav-item .icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 5px;
+  border-radius: 50%;
+  margin-bottom: 2px;
+  transition: all 0.2s ease; /* Efeito suave ao alternar */
+}
+
+/* QUANDO ATIVO */
+.nav-item.ativo {
+  color: var(--principal);
+  font-weight: bold;
+}
+
+.nav-item.ativo .icon {
+  background-color: var(--secundaria); /*o círculo envolve apenas o emoji */
+  color: var(--principal);
+}

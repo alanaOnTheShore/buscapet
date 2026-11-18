@@ -1,0 +1,161 @@
+body {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-formulario {
+  display: flex;
+  position: relative;
+}
+
+/*empurra o formulário pra baixo pra mostrar o botão de voltar*/
+.main-formulario form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px; /*garante que o formulário não estique infinitamente*/
+  padding-top: 50px; /*espaço para o botão voltar ficar livre no topo*/
+  box-sizing: border-box;
+}
+
+.main-formulario h2 {
+  display: flex;
+  align-self: center;
+  margin: 25px;
+}
+
+/*BOTAO*/
+.meu-botao {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bolder;
+  text-align: center;
+  text-decoration: none;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  padding: 7px;
+  min-height: 40px;
+  border-radius: 10px;
+  min-width: 140px;
+  cursor: pointer;
+  margin-top: 40px;
+  width: 100%;
+  background-color: var(--principal-baixo);
+  color: var(--baixissimo);
+  border: 2px solid var(--principal-baixo);
+
+  font-family: inherit;
+  outline: none;
+}
+/*efeito ao tocar no botão*/
+.meu-botao:active {
+  background-color: var(--secundaria);
+  border: 2px solid var(--secundaria);
+  opacity: 0.8;
+}
+
+/*ajuste para iOS*/
+.meu-botao {
+  -webkit-tap-highlight-color: transparent; /* remove o piscar cinza nativo do iOS */
+}
+
+/*MODAL TERMOS*/
+.fundo-modal {
+  display: none; /*começa escondido*/
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--preto); /*fundo preto transparente*/
+  z-index: 1000; /*garante que fica na frente de tudo*/
+  justify-content: center;
+  align-items: center;
+}
+
+/*caixinha branca do formulário*/
+
+.conteudo-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--baixissimo);
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  position: relative; /*pra posicionar o botão fechar*/
+}
+
+/*CLASSE QUE O JAVASCRIPT ATIVA PARA MOSTRAR O POP-UP*/
+.fundo-modal.mostrar {
+  display: flex; /*muda de none para flex para aparecer centralizado*/
+}
+
+/* TUDO SÓ PRA UMA SETINHA NO SELECT */
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select select {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px;
+  padding-right: 35px; /* Abre espaço para a seta não cobrir o texto */
+  border: 1px solid var(--secundaria);
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-family: inherit;
+  background-color: #fff;
+  cursor: pointer;
+
+  /*remove a seta nativa do navegador*/
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/*nova seta*/
+.custom-select::after {
+  content: "";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  /*triangulinho*/
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--principal);
+
+  pointer-events: none; /*se o usuário clicar na seta, o select abra mesmo assim*/
+}
+
+.texto-termos {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 15px;
+  background-color: var(--branco);
+  border-radius: 6px;
+  text-align: left;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+.conteudo-modal h3 {
+  text-align: center;
+}
+
+.texto-termos p {
+  margin-bottom: 12px;
+  text-align: left;
+}
