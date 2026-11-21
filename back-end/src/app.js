@@ -8,6 +8,8 @@ const { limiteApi } = require('./middlewares/limites');
 const { naoEncontrado, tratarErros } = require('./middlewares/erros');
 const authRoutes = require('./routes/auth.routes');
 const animaisRoutes = require('./routes/animais.routes');
+const perdidosRoutes = require('./routes/perdidos.routes');
+const encontradosRoutes = require('./routes/encontrados.routes');
 
 const PAGINAS_PUBLICAS = new Set(['index', 'home', 'cadastro-perfil', 'redefinir-senha', 'criar-nova-senha']);
 const PAGINAS_PRIVADAS = new Set(['cadastro-pet', 'meus-pets', 'perfil']);
@@ -21,6 +23,11 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false, limit: '10kb' }));
 app.use(cookieParser());
+// Express 5: sem corpo na requisição, req.body fica undefined (no 4 era {}). Garante o objeto.
+app.use((req, res, next) => {
+  if (req.body === undefined) req.body = {};
+  next();
+});
 
 // --- Arquivos estáticos: somente o que é público (nunca a pasta back-end/) ---
 app.use('/css', express.static(path.join(config.raizFront, 'css')));
@@ -43,6 +50,9 @@ app.get(/^\/([a-z-]+)\.html$/, (req, res, next) => {
 // --- API ---
 app.use('/api', limiteApi);
 app.use(authRoutes);
+// as rotas específicas vêm ANTES de /api/animais/:id, senão "perdidos" seria lido como um id
+app.use('/api/animais/perdidos', perdidosRoutes);
+app.use('/api/animais/encontrados', encontradosRoutes);
 app.use('/api/animais', animaisRoutes);
 app.use('/api', naoEncontrado);
 

@@ -1,37 +1,17 @@
-const { pool } = require('../db');
 const { ErroHttp } = require('../utils/erros');
 const { sucesso } = require('../utils/responder');
-const { texto, paraWhatsapp, exigirValido } = require('../utils/validacao');
-const { normalizarSexo, descreverSexo } = require('../utils/sexo');
+const { texto, paraWhatsapp } = require('../utils/validacao');
+const { descreverSexo } = require('../utils/sexo');
 const { otimizarImagem } = require('../utils/imagem');
 const { salvarImagem, removerImagem } = require('../utils/armazenamento');
+const { codificarCursor, decodificarCursor, ID_MAXIMO_INTEGER } = require('../utils/cursor');
+const { CATEGORIAS, validarAnimal } = require('../utils/regrasAnimal');
+const animalModel = require('../models/animal.model');
 
-const CATEGORIAS = ['ADOCAO', 'PERDIDO', 'ENCONTRADO'];
 const LIMITE_PADRAO = 12;
 const LIMITE_MAXIMO = 30;
-const REGEX_CURSOR_DATA = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}$/;
-const ID_MAXIMO_INTEGER = 2147483647;
 
-// ---------------------------------------------------------------------
-// Cursor de paginação
-// Guardamos (criado_em, id) do último item entregue. O timestamp vai como
-// TEXTO com microssegundos (o Date do JavaScript só tem milissegundos e
-// causaria itens repetidos/perdidos). O id desempata registros simultâneos.
-// ---------------------------------------------------------------------
-const codificarCursor = (criadoEm, id) => Buffer.from(`${criadoEm}|${id}`).toString('base64url');
-
-function decodificarCursor(valor) {
-  if (valor === undefined || valor === '') return null;
-  const invalido = () => new ErroHttp(400, 'Cursor de paginação inválido.');
-  if (typeof valor !== 'string' || valor.length > 100) throw invalido();
-  const [criadoEm, idTexto] = Buffer.from(valor, 'base64url').toString('utf8').split('|');
-  const id = Number(idTexto);
-  if (!REGEX_CURSOR_DATA.test(criadoEm || '') || !Number.isInteger(id) || id < 0 || id > ID_MAXIMO_INTEGER) {
-    throw invalido();
-  }
-  return { criadoEm, id };
-}
-
+/** Formato do card entregue ao front. O ícone de gênero vem do que está salvo no banco. */
 const montarCard = (linha) => ({
   id: linha.id,
   categoria: linha.categoria,
@@ -41,137 +21,70 @@ const montarCard = (linha) => ({
 });
 
 // ---------------------------------------------------------------------
-// POST /api/animais  (multipart/form-data, campo da foto: "foto")
+// POST (multipart/form-data, campo da foto: "foto") - exige login
+// Sem categoria fixa: a categoria vem do corpo (formulário único do front).
+// Com categoria fixa: usada pelas rotas /perdidos e /encontrados.
 // ---------------------------------------------------------------------
-async function criar(req, res) {
-  const categoria = texto(req.body.categoria).toUpperCase();
-  const nome = texto(req.body.nome) || null;
-  const sexo = normalizarSexo(req.body.sexo);
-  const descricao = texto(req.body.descricao);
-  const detalhesFugaInformado = texto(req.body.detalhes_fuga);
+function criarCategoria(categoriaFixa = null) {
+  return async function criar(req, res) {
+    const dados = validarAnimal(req.body, req.file, categoriaFixa);
 
-  const campos = {};
-  if (!CATEGORIAS.includes(categoria)) campos.categoria = 'Selecione a situação do pet.';
-  if (categoria !== 'ENCONTRADO' && !nome) campos.nome = 'Informe o nome do pet.';
-  if (nome && nome.length > 80) campos.nome = 'O nome pode ter no máximo 80 caracteres.';
-  if (!sexo) campos.sexo = 'Selecione o sexo do pet.';
-  if (!descricao) campos.descricao = 'Informe a descrição do pet.';
-  else if (descricao.length > 2000) campos.descricao = 'A descrição pode ter no máximo 2000 caracteres.';
-  if (categoria === 'PERDIDO' && !detalhesFugaInformado) {
-    campos.detalhes_fuga = 'Informe os detalhes da fuga.';
-  } else if (detalhesFugaInformado.length > 1000) {
-    campos.detalhes_fuga = 'Os detalhes da fuga podem ter no máximo 1000 caracteres.';
-  }
-  if (!req.file) campos.foto = 'Envie uma foto do pet.';
-  exigirValido(campos);
+    // Só gasta CPU com a imagem depois que o resto está válido
+    const imagem = await otimizarImagem(req.file.buffer);
+    const urlFoto = await salvarImagem(imagem);
 
-  // A CONSTRAINT do banco exige detalhes_fuga NULL fora de PERDIDO, mas o
-  // formulário envia o campo vazio (""). Aqui convertemos para NULL.
-  const detalhesFuga = categoria === 'PERDIDO' ? detalhesFugaInformado : null;
-
-  // Só gasta CPU com a imagem depois que o resto está válido
-  const imagem = await otimizarImagem(req.file.buffer);
-  const urlFoto = await salvarImagem(imagem);
-
-  const cliente = await pool.connect();
-  try {
-    await cliente.query('BEGIN');
-    const { rows } = await cliente.query(
-      `INSERT INTO animais (usuario_id, categoria, nome, sexo, descricao, detalhes_fuga)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-      [req.usuario.id, categoria, nome, sexo, descricao, detalhesFuga]
-    );
-    await cliente.query(
-      'INSERT INTO fotos_animal (animal_id, url, ordem) VALUES ($1, $2, 1)',
-      [rows[0].id, urlFoto]
-    );
-    await cliente.query('COMMIT');
+    let animal;
+    try {
+      // o dono do anúncio vem SEMPRE da sessão, nunca do corpo da requisição
+      animal = await animalModel.inserirComFoto({ usuarioId: req.usuario.id, ...dados, urlFoto });
+    } catch (erro) {
+      await removerImagem(urlFoto); // não deixa foto órfã no armazenamento
+      throw erro;
+    }
 
     sucesso(req, res, {
       status: 201,
-      json: { animal: { id: rows[0].id, categoria, foto: urlFoto } },
+      json: { animal: montarCard(animal) },
       redirect: '/meus-pets.html?cadastrado=1',
     });
-  } catch (erro) {
-    await cliente.query('ROLLBACK').catch(() => {});
-    await removerImagem(urlFoto); // não deixa foto órfã no armazenamento
-    throw erro;
-  } finally {
-    cliente.release();
-  }
+  };
 }
 
 // ---------------------------------------------------------------------
-// GET /api/animais?categoria=ADOCAO&limite=12&cursor=...
-// Paginação por cursor (keyset): custo constante mesmo com milhares de
-// animais, ao contrário de OFFSET, que fica mais lento a cada página.
-// A lista traz só o necessário para o card (sem descrição nem telefone).
+// GET ?categoria=ADOCAO&limite=12&cursor=...  - público
 // ---------------------------------------------------------------------
-async function listar(req, res) {
-  const categoriaInformada = texto(req.query.categoria).toUpperCase();
-  let categoria = null;
-  if (categoriaInformada && categoriaInformada !== 'TODOS') {
-    if (!CATEGORIAS.includes(categoriaInformada)) {
-      throw new ErroHttp(400, 'Categoria inválida. Use ADOCAO, PERDIDO, ENCONTRADO ou TODOS.');
+function listarCategoria(categoriaFixa = null) {
+  return async function listar(req, res) {
+    let categoria = categoriaFixa;
+    if (!categoria) {
+      const informada = texto(req.query.categoria).toUpperCase();
+      if (informada && informada !== 'TODOS') {
+        if (!CATEGORIAS.includes(informada)) {
+          throw new ErroHttp(400, 'Categoria inválida. Use ADOCAO, PERDIDO, ENCONTRADO ou TODOS.');
+        }
+        categoria = informada;
+      }
     }
-    categoria = categoriaInformada;
-  }
 
-  const limite = Math.min(Math.max(Number.parseInt(req.query.limite, 10) || LIMITE_PADRAO, 1), LIMITE_MAXIMO);
-  const cursor = decodificarCursor(req.query.cursor);
-
-  const parametros = [];
-  const condicoes = [];
-  if (categoria) {
-    parametros.push(categoria);
-    condicoes.push(`a.categoria = $${parametros.length}`);
-  }
-  if (cursor) {
-    parametros.push(cursor.criadoEm, cursor.id);
-    condicoes.push(
-      `(a.criado_em, a.id) < ($${parametros.length - 1}::timestamp, $${parametros.length}::int)`
+    const limite = Math.min(
+      Math.max(Number.parseInt(req.query.limite, 10) || LIMITE_PADRAO, 1),
+      LIMITE_MAXIMO
     );
-  }
-  parametros.push(limite + 1); // um a mais só para saber se existe próxima página
+    const cursor = decodificarCursor(req.query.cursor);
 
-  const { rows } = await pool.query(
-    `SELECT a.id, a.categoria, a.nome, a.sexo, f.url AS foto,
-            to_char(a.criado_em, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS cursor_data
-       FROM animais a
-       LEFT JOIN fotos_animal f ON f.animal_id = a.id AND f.ordem = 1
-      ${condicoes.length ? `WHERE ${condicoes.join(' AND ')}` : ''}
-      ORDER BY a.criado_em DESC, a.id DESC
-      LIMIT $${parametros.length}`,
-    parametros
-  );
-
-  const temMais = rows.length > limite;
-  const pagina = temMais ? rows.slice(0, limite) : rows;
-  const ultimo = pagina[pagina.length - 1];
-
-  res.json({
-    itens: pagina.map(montarCard),
-    proximoCursor: temMais ? codificarCursor(ultimo.cursor_data, ultimo.id) : null,
-  });
+    const { itens, proximo } = await animalModel.listarPagina({ categoria, limite, cursor });
+    res.json({ itens: itens.map(montarCard), proximoCursor: proximo ? codificarCursor(proximo) : null });
+  };
 }
 
 // ---------------------------------------------------------------------
-// GET /api/animais/:id  - dados completos para o modal de detalhes
+// GET /:id - dados completos para o modal de detalhes (público)
 // ---------------------------------------------------------------------
 async function detalhar(req, res) {
   const naoEncontrado = () => new ErroHttp(404, 'Anúncio não encontrado.');
   if (!/^\d+$/.test(req.params.id) || Number(req.params.id) > ID_MAXIMO_INTEGER) throw naoEncontrado();
 
-  const { rows } = await pool.query(
-    `SELECT a.id, a.categoria, a.nome, a.sexo, a.descricao, a.detalhes_fuga,
-            f.url AS foto, u.nome AS responsavel_nome, u.tipo AS responsavel_tipo, u.telefone
-       FROM animais a
-       JOIN usuarios u ON u.id = a.usuario_id
-       LEFT JOIN fotos_animal f ON f.animal_id = a.id AND f.ordem = 1
-      WHERE a.id = $1`,
-    [Number(req.params.id)]
-  );
-  const linha = rows[0];
+  const linha = await animalModel.buscarDetalhe(Number(req.params.id));
   if (!linha) throw naoEncontrado();
 
   res.json({
@@ -186,4 +99,10 @@ async function detalhar(req, res) {
   });
 }
 
-module.exports = { criar, listar, detalhar };
+module.exports = {
+  criarCategoria,
+  listarCategoria,
+  criar: criarCategoria(),
+  listar: listarCategoria(),
+  detalhar,
+};

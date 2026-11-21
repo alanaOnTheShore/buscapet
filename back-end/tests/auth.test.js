@@ -330,3 +330,21 @@ test('helper entrar() cadastra e autentica', async () => {
   const agent = await entrar(request, app);
   expect((await agent.get('/api/me')).status).toBe(200);
 });
+
+// requisições sem corpo (robôs, curl) devem receber erro de validação, nunca 500
+describe('Requisições sem corpo', () => {
+  test.each([
+    ['/login', 401],
+    ['/cadastrar', 400],
+    ['/atualizar-senha', 400],
+  ])('POST %s sem corpo -> %i', async (rota, esperado) => {
+    const res = await request(app).post(rota);
+    expect(res.status).toBe(esperado);
+  });
+
+  test('POST /api/recuperar-senha sem corpo responde 200 genérico', async () => {
+    const res = await request(app).post('/api/recuperar-senha');
+    expect(res.status).toBe(200);
+    expect(email.enviarEmailRecuperacao).not.toHaveBeenCalled();
+  });
+});

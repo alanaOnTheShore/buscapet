@@ -7,10 +7,20 @@ os `action="/login"`, `fetch("/api/...")` e cookies do front funcionam sem CORS.
 buscapet/                  <- raiz do repositório (html, css/, img/)
 └── back-end/
     ├── database/          schema.sql (v2), migracao_001_*.sql, seed_desempenho.sql
-    ├── src/               app, rotas, controllers, middlewares, utils
-    ├── tests/             auth.test.js, adocao.test.js, banco.test.js
+    ├── src/
+    │   ├── routes/        auth, animais (adoção), perdidos, encontrados
+    │   ├── controllers/   auth, animais (genérico), perdidos, encontrados
+    │   ├── models/        animal.model.js  (único lugar com SQL de animais)
+    │   ├── middlewares/   sessão, limites, upload, erros
+    │   └── utils/         validação, regras por categoria, imagem, cursor, e-mail...
+    ├── tests/             auth, adocao, perdidos, encontrados, integracao, banco
     └── .env.example
 ```
+
+**Arquitetura em camadas:** `routes` (URL e middlewares) → `controllers` (HTTP e fluxo) →
+`models` (SQL). As regras de cada categoria ficam em `src/utils/regrasAnimal.js` (adoção, perdidos
+e encontrados). Os módulos de Perdidos e Encontrados reutilizam o mesmo model da tabela `animais`:
+só a categoria e as regras mudam. Stack: Node 18+, Express 5.
 
 ## 1. Banco de dados
 
@@ -29,7 +39,7 @@ O que mudou da v1: coluna `animais.sexo` (`M`/`F`, usada nos ícones de gênero)
 cd back-end
 cp .env.example .env        # preencha DATABASE_URL, JWT_SECRET e TEST_DATABASE_URL
 npm install
-npm test                    # 113 testes (precisa do banco de TESTES)
+npm test                    # 150 testes (precisa do banco de TESTES)
 npm start                   # http://localhost:3000
 ```
 
@@ -63,13 +73,21 @@ Cliente JSON (fetch, Postman) recebe JSON. Formulário HTML nativo (o navegador 
 | `POST /api/recuperar-senha` | `{email}` | 200 **sempre igual** (não revela se o e-mail existe) | – |
 | `POST /atualizar-senha` | `token, senha, conf-senha` | 200 · form → `/index.html?senha=alterada` | 400 link inválido/expirado/usado |
 
-### Adoção (e demais categorias – o formulário do front é único)
+### Animais (Adoção, Perdidos e Encontrados)
 
 | Rota | Descrição |
 |---|---|
 | `POST /api/animais` | **Login obrigatório.** `multipart/form-data`: `categoria, nome, sexo (M/F), descricao, detalhes_fuga, foto`. Foto: JPG/PNG/WEBP/GIF até 10 MB. |
 | `GET /api/animais?categoria=ADOCAO&limite=12&cursor=…` | Pública. `categoria`: `ADOCAO`, `PERDIDO`, `ENCONTRADO` ou `TODOS` (padrão). Limite padrão 12, máximo 30. |
 | `GET /api/animais/:id` | Pública. Dados completos + `whatsapp` (já com DDI 55) para o modal. |
+| `POST/GET /api/animais/perdidos` | Atalho que fixa a categoria `PERDIDO` (`detalhes_fuga` obrigatório). Mesmo formato do `POST/GET /api/animais`. |
+| `POST/GET /api/animais/encontrados` | Atalho que fixa a categoria `ENCONTRADO` (nome opcional; `detalhes_fuga` não é aceito). |
+
+Regras por categoria (`src/utils/regrasAnimal.js`): **ADOCAO** exige nome e não aceita fuga · **PERDIDO** exige nome e
+`detalhes_fuga` · **ENCONTRADO** tem nome opcional e não aceita fuga. Em todas: `sexo` (M/F), `descricao` e `foto` são
+obrigatórios, e o dono do anúncio vem sempre da sessão (o campo `usuario_id` do corpo é ignorado).
+
+`POST` devolve 201 `{ animal: { id, categoria, nome, sexo, sexoRotulo, sexoIcone, foto } }`.
 
 Cada animal devolve o gênero **já traduzido a partir do que está no banco**:
 `{ sexo: "F", sexoRotulo: "Fêmea", sexoIcone: "/img/icon-sexo/fem.png" }` (mapeamento em `src/utils/sexo.js`).
@@ -157,8 +175,6 @@ No modal, busque `GET /api/animais/${id}` e monte o WhatsApp assim:
 2. **Fotos:** discos de serviços gratuitos costumam ser **efêmeros** (as fotos somem a cada novo deploy/reinício). Antes de ir ao ar, troque só `src/utils/armazenamento.js` por um armazenamento de objetos (Supabase Storage, Cloudinary…); o resto do sistema só usa a URL que ele devolve.
 3. **E-mail:** use um SMTP gratuito (Brevo, Resend ou Gmail com senha de app) e preencha `SMTP_*`.
 
-## 8. Fora deste módulo (não implementado)
+## 8. Fora do que foi implementado
 
-Editar/excluir pet, "Meus Pets" com dados reais, edição e exclusão de perfil. As regras de PERDIDO e
-ENCONTRADO já são validadas no mesmo `POST /api/animais` (o front usa um formulário só), mas os testes
-escritos cobrem a adoção.
+Editar/excluir pet, "Meus Pets" com dados reais, edição e exclusão de perfil.

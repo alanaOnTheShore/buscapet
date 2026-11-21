@@ -116,6 +116,14 @@ describe('Cadastro de pet para adoção (POST /api/animais)', () => {
     expect(contarUploads()).toBe(0);
   });
 
+  test('detalhes de fuga só se aplicam a pets perdidos (ADOCAO com fuga -> 400)', async () => {
+    const res = await enviarPet(agent, { detalhes_fuga: 'Fugiu ontem' });
+    expect(res.status).toBe(400);
+    expect(res.body.campos.detalhes_fuga).toBeDefined();
+    expect((await pool.query('SELECT 1 FROM animais')).rowCount).toBe(0);
+    expect(contarUploads()).toBe(0);
+  });
+
   test('exige a foto', async () => {
     const res = await enviarPet(agent, {}, null);
     expect(res.status).toBe(400);
