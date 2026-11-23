@@ -12,6 +12,11 @@ function validarEmail(valor) {
   return email;
 }
 
+/** Retorna a mensagem de erro, ou null se o nome (já com trim) é válido. */
+function erroDeNome(nome) {
+  return !nome || nome.length > 120 ? 'Informe o nome (até 120 caracteres).' : null;
+}
+
 /** Retorna a mensagem de erro, ou null se a senha é válida. */
 function erroDeSenha(senha) {
   if (typeof senha !== 'string' || senha.length < 6) {
@@ -47,6 +52,7 @@ function exigirValido(campos) {
 module.exports = {
   texto,
   validarEmail,
+  erroDeNome,
   erroDeSenha,
   validarTelefone,
   paraWhatsapp,
