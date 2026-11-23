@@ -77,14 +77,41 @@ function listarCategoria(categoriaFixa = null) {
   };
 }
 
+const naoEncontrado = () => new ErroHttp(404, 'Anúncio não encontrado.');
+
+/** Valida o :id da URL. Qualquer coisa que não seja um id possível vira 404 (nunca chega ao banco). */
+function lerId(valor) {
+  if (!/^\d+$/.test(valor) || Number(valor) > ID_MAXIMO_INTEGER) throw naoEncontrado();
+  return Number(valor);
+}
+
+// ---------------------------------------------------------------------
+// GET /meus - anúncios do usuário logado (tela "Meus Pets")
+// ---------------------------------------------------------------------
+async function listarMeus(req, res) {
+  // o dono vem SEMPRE da sessão, nunca de parâmetro da URL
+  const itens = await animalModel.listarDoUsuario(req.usuario.id);
+  res.json({ itens: itens.map(montarCard) });
+}
+
+// ---------------------------------------------------------------------
+// DELETE /:id - exclui o anúncio (e as fotos) se for do usuário logado
+// Anúncio de outra pessoa responde 404, igual a um id que não existe.
+// ---------------------------------------------------------------------
+async function excluir(req, res) {
+  const fotos = await animalModel.excluirDoUsuario(lerId(req.params.id), req.usuario.id);
+  if (!fotos) throw naoEncontrado();
+
+  // o anúncio já foi apagado: falha ao remover um arquivo não pode virar erro para o usuário
+  await Promise.allSettled(fotos.map(removerImagem));
+  res.json({ ok: true });
+}
+
 // ---------------------------------------------------------------------
 // GET /:id - dados completos para o modal de detalhes (público)
 // ---------------------------------------------------------------------
 async function detalhar(req, res) {
-  const naoEncontrado = () => new ErroHttp(404, 'Anúncio não encontrado.');
-  if (!/^\d+$/.test(req.params.id) || Number(req.params.id) > ID_MAXIMO_INTEGER) throw naoEncontrado();
-
-  const linha = await animalModel.buscarDetalhe(Number(req.params.id));
+  const linha = await animalModel.buscarDetalhe(lerId(req.params.id));
   if (!linha) throw naoEncontrado();
 
   res.json({
@@ -104,5 +131,7 @@ module.exports = {
   listarCategoria,
   criar: criarCategoria(),
   listar: listarCategoria(),
+  listarMeus,
+  excluir,
   detalhar,
 };

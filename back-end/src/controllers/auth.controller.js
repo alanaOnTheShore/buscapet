@@ -1,14 +1,15 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const config = require('../config');
-const { pool } = require('../db');
 const { ErroHttp } = require('../utils/erros');
 const { sucesso } = require('../utils/responder');
 const { enviarEmailRecuperacao } = require('../utils/email');
 const { iniciarSessao, encerrarSessao } = require('../middlewares/auth');
+const usuarioModel = require('../models/usuario.model');
 const {
   texto,
   validarEmail,
+  erroDeNome,
   erroDeSenha,
   validarTelefone,
   exigirValido,
@@ -25,6 +26,14 @@ const MSG_TOKEN_INVALIDO = 'Link inválido ou expirado. Solicite uma nova redefi
 const sha256 = (valor) => crypto.createHash('sha256').update(valor).digest('hex');
 const usuarioPublico = ({ id, nome, email, telefone, tipo }) => ({ id, nome, email, telefone, tipo });
 
+/** Valida a senha e a confirmação (quando enviada). Devolve { senha?, confSenha? } com as mensagens. */
+function errosDeSenha(senha, confirmacao) {
+  const erro = erroDeSenha(senha);
+  if (erro) return { senha: erro };
+  if (confirmacao !== undefined && confirmacao !== senha) return { confSenha: 'As senhas não coincidem.' };
+  return {};
+}
+
 /** POST /cadastrar */
 async function cadastrar(req, res) {
   const { senha } = req.body;
@@ -35,27 +44,18 @@ async function cadastrar(req, res) {
   const tipo = (texto(req.body.tipo) || 'PESSOA').toUpperCase();
 
   const campos = {};
-  if (!nome || nome.length > 120) campos.nome = 'Informe o nome (até 120 caracteres).';
+  const erroNome = erroDeNome(nome);
+  if (erroNome) campos.nome = erroNome;
   if (!email) campos.email = 'Informe um e-mail válido (ex: nome@dominio.com).';
   if (!telefone) campos.telefone = 'Informe um telefone válido com DDD.';
   if (!['PESSOA', 'ONG'].includes(tipo)) campos.tipo = 'Tipo de conta inválido.';
-  const erroSenha = erroDeSenha(senha);
-  if (erroSenha) campos.senha = erroSenha;
-  else if (confirmacao !== undefined && confirmacao !== senha) {
-    campos.confSenha = 'As senhas não coincidem.';
-  }
+  Object.assign(campos, errosDeSenha(senha, confirmacao));
   exigirValido(campos);
 
   const senhaHash = await bcrypt.hash(senha, CUSTO_BCRYPT);
   let usuario;
   try {
-    const { rows } = await pool.query(
-      `INSERT INTO usuarios (nome, email, senha_hash, telefone, tipo)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, nome, email, telefone, tipo`,
-      [nome, email, senhaHash, telefone, tipo]
-    );
-    usuario = rows[0];
+    usuario = await usuarioModel.criar({ nome, email, senhaHash, telefone, tipo });
   } catch (erro) {
     // 23505 = violação de UNIQUE (e-mail já cadastrado). Seguro contra corrida.
     if (erro.code === '23505') {
@@ -79,11 +79,7 @@ async function login(req, res) {
 
   if (!email || typeof senha !== 'string' || senha.length === 0) throw invalidas();
 
-  const { rows } = await pool.query(
-    'SELECT id, nome, email, telefone, tipo, senha_hash FROM usuarios WHERE email = $1',
-    [email]
-  );
-  const usuario = rows[0];
+  const usuario = await usuarioModel.buscarParaLogin(email);
   const confere = await bcrypt.compare(senha, usuario ? usuario.senha_hash : HASH_FALSO);
   if (!usuario || !confere) throw invalidas();
 
@@ -102,17 +98,10 @@ async function recuperarSenha(req, res) {
   const email = validarEmail(req.body.email);
 
   if (email) {
-    const { rows } = await pool.query('SELECT id, nome, email FROM usuarios WHERE email = $1', [email]);
-    const usuario = rows[0];
+    const usuario = await usuarioModel.buscarPorEmail(email);
     if (usuario) {
       const token = crypto.randomBytes(32).toString('hex');
-      // um pedido novo invalida os anteriores
-      await pool.query('DELETE FROM tokens_recuperacao WHERE usuario_id = $1', [usuario.id]);
-      await pool.query(
-        `INSERT INTO tokens_recuperacao (usuario_id, token_hash, expira_em)
-         VALUES ($1, $2, NOW() + INTERVAL '1 hour')`,
-        [usuario.id, sha256(token)]
-      );
+      await usuarioModel.criarTokenRecuperacao(usuario.id, sha256(token));
       const link = `${config.appUrl}/criar-nova-senha.html?token=${token}`;
       // Sem await de propósito: o tempo do SMTP não pode denunciar se o e-mail existe.
       enviarEmailRecuperacao({ para: usuario.email, nome: usuario.nome, link }).catch((erro) =>
@@ -133,39 +122,13 @@ async function atualizarSenha(req, res) {
   const { senha } = req.body;
   const confirmacao = req.body['conf-senha'] ?? req.body.confSenha;
 
-  const campos = {};
-  const erroSenha = erroDeSenha(senha);
-  if (erroSenha) campos.senha = erroSenha;
-  else if (confirmacao !== undefined && confirmacao !== senha) {
-    campos.confSenha = 'As senhas não coincidem.';
-  }
-  exigirValido(campos); // valida ANTES de consumir o token
+  exigirValido(errosDeSenha(senha, confirmacao)); // valida ANTES de consumir o token
 
   if (!/^[a-f0-9]{64}$/.test(token)) throw new ErroHttp(400, MSG_TOKEN_INVALIDO);
 
   const novoHash = await bcrypt.hash(senha, CUSTO_BCRYPT);
-  const cliente = await pool.connect();
-  try {
-    await cliente.query('BEGIN');
-    // Consome o token de forma atômica: só funciona uma vez e antes de expirar
-    const consumido = await cliente.query(
-      `UPDATE tokens_recuperacao SET usado_em = NOW()
-        WHERE token_hash = $1 AND usado_em IS NULL AND expira_em > NOW()
-        RETURNING usuario_id`,
-      [sha256(token)]
-    );
-    if (consumido.rowCount === 0) throw new ErroHttp(400, MSG_TOKEN_INVALIDO);
-
-    const usuarioId = consumido.rows[0].usuario_id;
-    await cliente.query('UPDATE usuarios SET senha_hash = $1 WHERE id = $2', [novoHash, usuarioId]);
-    await cliente.query('DELETE FROM tokens_recuperacao WHERE usuario_id = $1', [usuarioId]);
-    await cliente.query('COMMIT');
-  } catch (erro) {
-    await cliente.query('ROLLBACK').catch(() => {});
-    throw erro;
-  } finally {
-    cliente.release();
-  }
+  const trocou = await usuarioModel.trocarSenhaComToken(sha256(token), novoHash);
+  if (!trocou) throw new ErroHttp(400, MSG_TOKEN_INVALIDO);
 
   sucesso(req, res, {
     json: { mensagem: 'Senha alterada com sucesso.' },
