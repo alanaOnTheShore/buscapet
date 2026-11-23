@@ -53,39 +53,6 @@
       </div>
     </main>
 
-    <script>
-      // EFEITO DOS BOTOES NO iOS
-      document.addEventListener("touchstart", function () {}, true);
-
-      document
-        .getElementById("form-redefinir")
-        .addEventListener("submit", async function (event) {
-          //impede a página de recarregar/atualizar ao enviar o formulário
-          event.preventDefault();
-
-          const emailInput = document.getElementById("email-redefinicao");
-          const emailValue = emailInput.value.trim();
-          const msgSucesso = document.getElementById("mensagem-sucesso");
-          const form = document.getElementById("form-redefinir");
-
-          try {
-            //envia o e-mail para a rota do servidor de forma invisível
-            const resposta = await fetch("/api/recuperar-senha", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ email: emailValue }), //transforma o e-mail em JSON para o servidor ler
-            });
-
-            //mensagem de sucesso exibida mesmo se o email não estiver cadastrado: previne ataque malicioso
-            form.style.display = "none";
-            msgSucesso.style.display = "block";
-          } catch (error) {
-            console.error("Erro ao conectar com o servidor:", error);
-            alert("Ocorreu um erro de conexão. Tente novamente mais tarde.");
-          }
-        });
-    </script>
+    <script type="module" src="js/paginas/redefinir-senha.js"></script>
   </body>
 </html>

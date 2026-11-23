@@ -59,36 +59,6 @@
       </div>
     </main>
 
-    <script>
-      document.addEventListener("touchstart", function () {}, true);
-
-      // PROGRAMAÇÃO: Captura automática do token enviado no link do e-mail
-      window.addEventListener("DOMContentLoaded", () => {
-        const parametrosUrl = new URLSearchParams(window.location.search);
-        const token = parametrosUrl.get("token");
-
-        if (token) {
-          document.getElementById("token-seguranca").value = token;
-        } else {
-          alert(
-            "Token de segurança ausente ou inválido. Solicite uma nova redefinição."
-          );
-          window.location.href = "redefinir-senha.html";
-        }
-      });
-
-      // VALIDAÇÃO: Verifica se as senhas batem antes de enviar para o banco
-      document
-        .getElementById("form-nova-senha")
-        .addEventListener("submit", function (event) {
-          const senha = document.getElementById("nova-senha").value;
-          const confSenha = document.getElementById("conf-nova-senha").value;
-
-          if (senha !== confSenha) {
-            event.preventDefault();
-            alert("As senhas não coincidem! Verifique e tente novamente.");
-          }
-        });
-    </script>
+    <script type="module" src="js/paginas/criar-nova-senha.js"></script>
   </body>
 </html>

@@ -73,7 +73,7 @@
           <span class="acao-texto">Excluir Minha Conta</span>
         </a>
       </section>
-
+</main>
     <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA -->
     <nav class="nav-inferior">
       <a href="home.html" class="nav-item">
@@ -102,61 +102,6 @@
       </a>
     </nav>
 
-    <!-- SIMULAÇÃO DE DADOS DO BANCO -->
-    <script>
-      window.addEventListener("DOMContentLoaded", () => {
-        // Simulação dos dados que viriam do SELECT na tabela 'usuarios' do banco
-        const usuarioLogadoDoBanco = {
-          nome: "Instituto Amigos de Patas",
-          email: "contato@amigosdepatas.org",
-          telefone: "(47) 99999-8888",
-          tipo: "ONG", // Pode ser 'PESSOA' ou 'ONG'
-        };
-
-        // Alimenta o Front-end de forma dinâmica
-        document.getElementById("perfil-nome").innerText =
-          usuarioLogadoDoBanco.nome;
-        document.getElementById("nome-perfil").value =
-          usuarioLogadoDoBanco.nome;
-        document.getElementById("email-perfil").value =
-          usuarioLogadoDoBanco.email;
-        document.getElementById("telefone-perfil").value =
-          usuarioLogadoDoBanco.telefone;
-
-        // Configura a Badge do ENUM
-        const badge = document.getElementById("perfil-badge-tipo");
-        badge.innerText = usuarioLogadoDoBanco.tipo;
-        if (usuarioLogadoDoBanco.tipo === "ONG") {
-          badge.style.backgroundColor = "var(--principal)";
-          badge.style.color = "var(--branco)";
-        } else {
-          badge.style.backgroundColor = "var(--secundaria-baixo)";
-          badge.style.color = "var(--principal)";
-        }
-      });
-
-      // Evento de salvar alterações
-      document
-        .getElementById("form-perfil")
-        .addEventListener("submit", function (e) {
-          // Quando tiver o back-end, remover o preventDefault() para enviar os dados reais
-          e.preventDefault();
-          alert("Alterações salvas com sucesso! Dados atualizados no banco.");
-        });
-
-      // Lógica para o botão de EXCLUIR Conta
-      document.getElementById("btn-excluir-conta").addEventListener("click", () => {
-        // Exibe uma caixa de confirmação nativa do navegador
-        const confirmou = confirm("🚨 ATENÇÃO: Tem certeza que deseja excluir sua conta?\n\nEsta ação é irreversível. Todos os seus dados e pets cadastrados serão apagados permanentemente.");
-        
-        if (confirmou) {
-          // No futuro com o Back-end, fazer um disparador de exclusão:
-          // fetch('/api/usuarios/deletar', { method: 'DELETE' })
-          
-          alert("Conta excluída com sucesso. Esperamos ver você de volta em breve!");
-          window.location.href = "index.html"; // Redireciona para a tela de login inicial
-        }
-      });
-    </script>
+    <script type="module" src="js/paginas/perfil.js"></script>
   </body>
 </html>

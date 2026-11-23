@@ -108,7 +108,7 @@
         <img src="img/icons/home.png" alt="Ícone Home" class="icon" />
         <span class="label">HOME</span>
       </a>
-      <a href="cadastrar-animal.html" class="nav-item ativo">
+      <a href="cadastro-pet.html" class="nav-item ativo">
         <div class="icon">
           <img src="img/icons/cadastrar-animal.png" alt="Ícone Cadastrar" />
         </div>
@@ -129,58 +129,6 @@
     </nav>
 
     <!-- INTELIGÊNCIA DE NAVEGAÇÃO E REGRAS DO BANCO -->
-    <script>
-      const selectSituacao = document.getElementById("situacao-pet");
-      const boxFuga = document.getElementById("box-detalhes-fuga");
-      const inputFuga = document.getElementById("fuga-pet");
-      const inputNome = document.getElementById("nome-pet");
-      const labelNome = document.getElementById("label-nome-pet");
-
-      // 1. CAPTURA DO PARAMETRO DA URL (Controla o fluxo vindo do Carrossel vs Barra Inferior)
-      window.addEventListener("DOMContentLoaded", () => {
-        const parametrosUrl = new URLSearchParams(window.location.search);
-        const tipoVindoDoCarrossel = parametrosUrl.get("tipo"); // Pega ?tipo=PERDIDO, etc.
-
-        if (tipoVindoDoCarrossel) {
-          selectSituacao.value = tipoVindoDoCarrossel;
-          atualizarFormularioPorSituacao(tipoVindoDoCarrossel);
-        }
-        // Se não houver parâmetro (clique no botão + da barra inferior),
-        // o formulário cai por padrão na opção "Selecione a situação..." vazia e obrigatória.
-      });
-
-      // 2. CONTROLE DINÂMICO DOS CAMPOS (Respeita as regras e CONSTRAINTS do banco de dados)
-      selectSituacao.addEventListener("change", (e) => {
-        atualizarFormularioPorSituacao(e.target.value);
-      });
-
-      function atualizarFormularioPorSituacao(situacao) {
-        if (situacao === "PERDIDO") {
-          // Ativa a caixa de detalhes de fuga (Obrigatória no banco para Perdidos)
-          boxFuga.style.display = "block";
-          inputFuga.required = true;
-
-          // Nome é obrigatório
-          labelNome.innerText = "Nome do pet *";
-          inputNome.required = true;
-        } else if (situacao === "ADOCAO") {
-          boxFuga.style.display = "none";
-          inputFuga.required = false;
-          inputFuga.value = "";
-
-          // Nome é obrigatório
-          labelNome.innerText = "Nome do pet *";
-          inputNome.required = true;
-        } else if (situacao === "ENCONTRADO") {
-          boxFuga.style.display = "none";
-          inputFuga.required = false;
-          inputFuga.value = "";
-
-          // Regra ck_animais_nome: Encontrados podem não ter nome registrado
-          labelNome.innerText = "Nome do pet (Opcional)";
-          inputNome.required = false;
-        }
-      }
-    </script>
+    <script type="module" src="js/paginas/cadastro-pet.js"></script>
   </body>
 </html>

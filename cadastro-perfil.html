@@ -160,37 +160,6 @@
       </div>
     </main>
 
-    <script>
-      //EFEITO DOS BOTOES NO iOS
-      document.addEventListener("touchstart", function () {}, true);
-
-      //ATIVA MODAL TERMOS DE USO
-      const modal = document.getElementById("modal-termos");
-
-      //abre o pop-up ao clicar no botão Entrar
-      document
-        .getElementById("abrir-termos")
-        .addEventListener("click", () => modal.classList.add("mostrar"));
-
-      // Fecha o pop-up ao clicar no (X)
-      document
-        .getElementById("btn-fechar-termos")
-        .addEventListener("click", () => modal.classList.remove("mostrar"));
-
-      // VALIDAÇÃO DE SENHAS IDENTICAS ANTES DO ENVIO
-      document
-        .getElementById("form-cadastro")
-        .addEventListener("submit", function (event) {
-          const senha = document.getElementById("senha-cadastro").value;
-          const confSenha = document.getElementById(
-            "conf-senha-cadastro"
-          ).value;
-
-          if (senha !== confSenha) {
-            event.preventDefault(); // Cancela o envio do formulário
-            alert("As senhas não coincidem! Por favor, verifique.");
-          }
-        });
-    </script>
+    <script type="module" src="js/paginas/cadastro-perfil.js"></script>
   </body>
 </html>

@@ -63,7 +63,7 @@ select:focus {
   border-color: var(--principal);
 }
 
-/* O SELETOR EM CAIXA COM A SETA PERSONALIZADA (Reutilizando sua lógica leve) */
+/* O SELETOR EM CAIXA COM A SETA PERSONALIZADA */
 .custom-select {
   position: relative;
   width: 100%;
