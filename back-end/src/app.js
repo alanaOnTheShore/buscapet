@@ -7,6 +7,7 @@ const { exigirLoginPagina } = require('./middlewares/auth');
 const { limiteApi } = require('./middlewares/limites');
 const { naoEncontrado, tratarErros } = require('./middlewares/erros');
 const authRoutes = require('./routes/auth.routes');
+const usuariosRoutes = require('./routes/usuarios.routes');
 const animaisRoutes = require('./routes/animais.routes');
 const perdidosRoutes = require('./routes/perdidos.routes');
 const encontradosRoutes = require('./routes/encontrados.routes');
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
 
 // --- Arquivos estáticos: somente o que é público (nunca a pasta back-end/) ---
 app.use('/css', express.static(path.join(config.raizFront, 'css')));
+app.use('/js', express.static(path.join(config.raizFront, 'js')));
 app.use('/img', express.static(path.join(config.raizFront, 'img'), { maxAge: '7d' }));
 // Fotos têm nome aleatório e nunca mudam: podem ficar 30 dias no cache do celular
 app.use('/uploads', express.static(config.uploadDir, { maxAge: '30d', immutable: true, index: false }));
@@ -50,6 +52,7 @@ app.get(/^\/([a-z-]+)\.html$/, (req, res, next) => {
 // --- API ---
 app.use('/api', limiteApi);
 app.use(authRoutes);
+app.use(usuariosRoutes);
 // as rotas específicas vêm ANTES de /api/animais/:id, senão "perdidos" seria lido como um id
 app.use('/api/animais/perdidos', perdidosRoutes);
 app.use('/api/animais/encontrados', encontradosRoutes);
