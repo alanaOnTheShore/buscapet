@@ -1,7 +1,7 @@
 # 🐾 BuscaPet: App Mobile Para Busca e Cadastro de Animais
 
 > **Projeto Integrador - Desenvolvimento Orientado a Testes (TDD) e Programação Mobile**  
-> *Curso de Análise e Desenvolvimento de Sistemas — Universidade do Vale do Itajaí (UNIVALI)*
+> *Curso de Análise e Desenvolvimento de Sistemas — Universidade do Vale do Itajaí (UNIVALI)*  
 > https://buscapet-amsj.onrender.com
 
 ---
