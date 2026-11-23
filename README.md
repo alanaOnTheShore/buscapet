@@ -32,7 +32,7 @@ A plataforma resolve três problemas principais enfrentados pela comunidade:
 
 ### **Deploy & CI/CD**
 - **GitHub Actions** — Pipeline de integração e entrega contínua.
-- **Netlify** — Hospedagem do MVP em nuvem.
+- **Supabase & Render** — Hospedagem do MVP em nuvem.
 
 ---
 
@@ -65,8 +65,9 @@ O projeto segue a abordagem de **Test-Driven Development (TDD)**, onde as regras
 
 ```text
 buscapet/
-├── back-end/             # Lógica do servidor e rotas da aplicação
-├── css/                  # Arquivos de estilização (ex: index.css, meus-pets.css)
+├── back-end/             # Servidor Express: rotas, controllers, models (SQL), testes Jest e schema do banco
+├── css/                  # Arquivos de estilização (geral.css tem o que é compartilhado entre as telas)
+├── js/                   # Módulos JavaScript do front-end (api.js, componentes.js e um módulo por página em paginas/)
 ├── img/                  # Imagens e assets visuais do projeto
 ├── .gitignore            # Arquivos e pastas ignorados pelo Git
 ├── README.md             # Documentação principal do repositório
@@ -76,10 +77,10 @@ buscapet/
 ├── home.html             # Página principal/home do sistema
 ├── index.html            # Página de entrada/login
 ├── meus-pets.html        # Página de gerenciamento dos pets cadastrados
-├── package.json          # Dependências e scripts do projeto Node.js
+├── package.json          # (restante do modelo inicial do projeto; as dependências reais ficam em back-end/package.json)
 ├── perfil.html           # Página de perfil do usuário
 └── redefinir-senha.html  # Página de fluxo de recuperação de senha
-````
+```
 
 ## 🚀 Como Executar o Projeto Localmente:
 ### Pré-requisitos
@@ -88,15 +89,18 @@ buscapet/
 ### Passo a Passo
 1. Clonar o repositório:  
 **Bash**  
-git clone [https://github.com/SEU-USUARIO/buscapet.git](https://github.com/SEU-USUARIO/buscapet.git)  
-cd buscapet  
-2. Instalar as dependências:  
+git clone https://github.com/alanaOnTheShore/buscapet.git  
+cd buscapet/back-end  
+2. Configurar as variáveis de ambiente (veja `back-end/README.md`, seção 3):  
+**Bash**  
+cp .env.example .env  
+3. Instalar as dependências:  
 **Bash**  
 npm install  
-3. Executar os testes automatizados (Jest):  
+4. Executar os testes automatizados (Jest, usam o banco definido em `TEST_DATABASE_URL`):  
 **Bash**  
 npm test  
-4. Iniciar o servidor em ambiente de desenvolvimento:  
+5. Iniciar o servidor (entrega as páginas e a API em http://localhost:3000):  
 **Bash**  
 npm start  
 ## 👥 Equipe de Desenvolvimento
