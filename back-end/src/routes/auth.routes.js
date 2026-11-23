@@ -2,7 +2,6 @@ const express = require('express');
 const { ah } = require('../utils/assincrono');
 const { comParametros } = require('../utils/responder');
 const { definirRetorno } = require('../middlewares/retorno');
-const { exigirLogin } = require('../middlewares/auth');
 const { limiteLogin, limiteRecuperacao, limiteCadastro } = require('../middlewares/limites');
 const auth = require('../controllers/auth.controller');
 
@@ -12,7 +11,6 @@ const router = express.Router();
 router.post('/cadastrar', definirRetorno('/cadastro-perfil.html'), limiteCadastro, ah(auth.cadastrar));
 router.post('/login', definirRetorno('/index.html'), limiteLogin, ah(auth.login));
 router.post('/api/logout', ah(auth.logout));
-router.get('/api/me', exigirLogin, (req, res) => res.json({ usuario: req.usuario }));
 
 router.post(
   '/api/recuperar-senha',

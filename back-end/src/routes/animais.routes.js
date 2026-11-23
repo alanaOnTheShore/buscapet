@@ -9,6 +9,9 @@ const router = express.Router();
 
 // Visualização é pública
 router.get('/', ah(animais.listar));
+
+// "meus" vem ANTES de "/:id", senão seria lido como se fosse um id
+router.get('/meus', exigirLogin, ah(animais.listarMeus));
 router.get('/:id', ah(animais.detalhar));
 
 // Cadastro exige login (a verificação vem ANTES de receber a foto)
@@ -19,5 +22,8 @@ router.post(
   upload.single('foto'),
   ah(animais.criar)
 );
+
+// Só o dono exclui o próprio anúncio
+router.delete('/:id', exigirLogin, ah(animais.excluir));
 
 module.exports = router;
