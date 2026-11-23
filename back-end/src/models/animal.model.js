@@ -81,4 +81,51 @@ async function buscarDetalhe(id) {
   return rows[0] || null;
 }
 
-module.exports = { inserirComFoto, listarPagina, buscarDetalhe };
+/**
+ * Todos os anúncios de UM usuário (mais recentes primeiro), para a tela "Meus Pets".
+ * Sem paginação de propósito: é a lista de quem está logado (usa idx_animais_usuario)
+ * e a tela precisa dela inteira para gerenciar os anúncios.
+ */
+async function listarDoUsuario(usuarioId) {
+  const { rows } = await pool.query(
+    `SELECT a.id, a.categoria, a.nome, a.sexo, f.url AS foto
+       FROM animais a
+       LEFT JOIN fotos_animal f ON f.animal_id = a.id AND f.ordem = 1
+      WHERE a.usuario_id = $1
+      ORDER BY a.criado_em DESC, a.id DESC`,
+    [usuarioId]
+  );
+  return rows;
+}
+
+/**
+ * Apaga o anúncio SOMENTE se for do usuário informado (a checagem de dono está no próprio DELETE).
+ * Devolve as URLs das fotos, para limpar o armazenamento, ou null se não existe / é de outra pessoa.
+ * As linhas de fotos_animal somem em cascata, por isso as URLs são lidas antes.
+ */
+async function excluirDoUsuario(id, usuarioId) {
+  const cliente = await pool.connect();
+  try {
+    await cliente.query('BEGIN');
+    const { rows: fotos } = await cliente.query(
+      `SELECT f.url
+         FROM fotos_animal f
+         JOIN animais a ON a.id = f.animal_id
+        WHERE a.id = $1 AND a.usuario_id = $2`,
+      [id, usuarioId]
+    );
+    const { rowCount } = await cliente.query('DELETE FROM animais WHERE id = $1 AND usuario_id = $2', [
+      id,
+      usuarioId,
+    ]);
+    await cliente.query('COMMIT');
+    return rowCount > 0 ? fotos.map((linha) => linha.url) : null;
+  } catch (erro) {
+    await cliente.query('ROLLBACK').catch(() => {});
+    throw erro;
+  } finally {
+    cliente.release();
+  }
+}
+
+module.exports = { inserirComFoto, listarPagina, buscarDetalhe, listarDoUsuario, excluirDoUsuario };
