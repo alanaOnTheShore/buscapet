@@ -8,17 +8,20 @@ buscapet/                  <- raiz do repositório (html, css/, img/)
 └── back-end/
     ├── database/          schema.sql (v2), migracao_001_*.sql, seed_desempenho.sql
     ├── src/
-    │   ├── routes/        auth, animais (adoção), perdidos, encontrados
-    │   ├── controllers/   auth, animais (genérico), perdidos, encontrados
-    │   ├── models/        animal.model.js  (único lugar com SQL de animais)
+    │   ├── routes/        auth, usuarios (perfil), animais (adoção), perdidos, encontrados
+    │   ├── controllers/   auth, usuarios, animais (genérico), perdidos, encontrados
+    │   ├── models/        animal.model.js e usuario.model.js  (únicos lugares com SQL)
     │   ├── middlewares/   sessão, limites, upload, erros
     │   └── utils/         validação, regras por categoria, imagem, cursor, e-mail...
-    ├── tests/             auth, adocao, perdidos, encontrados, integracao, banco
+    ├── tests/             auth, usuarios, adocao, meus-pets, perdidos, encontrados, integracao, banco
     └── .env.example
 ```
 
+O front-end (HTML, `css/`, `img/` e os módulos JavaScript em `js/`) fica na raiz do repositório e é
+servido por este mesmo servidor (veja a seção 5).
+
 **Arquitetura em camadas:** `routes` (URL e middlewares) → `controllers` (HTTP e fluxo) →
-`models` (SQL). As regras de cada categoria ficam em `src/utils/regrasAnimal.js` (adoção, perdidos
+`models` (SQL; controllers e middlewares nunca acessam o banco diretamente). As regras de cada categoria ficam em `src/utils/regrasAnimal.js` (adoção, perdidos
 e encontrados). Os módulos de Perdidos e Encontrados reutilizam o mesmo model da tabela `animais`:
 só a categoria e as regras mudam. Stack: Node 18+, Express 5.
 
@@ -39,7 +42,7 @@ O que mudou da v1: coluna `animais.sexo` (`M`/`F`, usada nos ícones de gênero)
 cd back-end
 cp .env.example .env        # preencha DATABASE_URL, JWT_SECRET e TEST_DATABASE_URL
 npm install
-npm test                    # 150 testes (precisa do banco de TESTES)
+npm test                    # todos os testes (precisa do banco de TESTES)
 npm start                   # http://localhost:3000
 ```
 
@@ -70,6 +73,8 @@ Cliente JSON (fetch, Postman) recebe JSON. Formulário HTML nativo (o navegador 
 | `POST /login` | `email, senha` | 200 `{usuario}` + cookie HttpOnly · form → `/home.html` | 401 genérico |
 | `POST /api/logout` | – | 200 · form → `/index.html` | – |
 | `GET /api/me` | – | 200 `{usuario}` | 401 |
+| `PATCH /api/me` | `nome, telefone` (e-mail, tipo e senha não mudam por aqui) | 200 `{usuario}` com os dados gravados | 400 (`campos`), 401 |
+| `DELETE /api/me` | – | 200 `{ok}`; apaga a conta, os anúncios e as fotos (inclusive os arquivos) e encerra a sessão | 401 |
 | `POST /api/recuperar-senha` | `{email}` | 200 **sempre igual** (não revela se o e-mail existe) | – |
 | `POST /atualizar-senha` | `token, senha, conf-senha` | 200 · form → `/index.html?senha=alterada` | 400 link inválido/expirado/usado |
 
@@ -80,6 +85,8 @@ Cliente JSON (fetch, Postman) recebe JSON. Formulário HTML nativo (o navegador 
 | `POST /api/animais` | **Login obrigatório.** `multipart/form-data`: `categoria, nome, sexo (M/F), descricao, detalhes_fuga, foto`. Foto: JPG/PNG/WEBP/GIF até 10 MB. |
 | `GET /api/animais?categoria=ADOCAO&limite=12&cursor=…` | Pública. `categoria`: `ADOCAO`, `PERDIDO`, `ENCONTRADO` ou `TODOS` (padrão). Limite padrão 12, máximo 30. |
 | `GET /api/animais/:id` | Pública. Dados completos + `whatsapp` (já com DDI 55) para o modal. |
+| `GET /api/animais/meus` | **Login obrigatório.** Todos os anúncios de quem está logado, do mais recente ao mais antigo: `{ itens: [...] }` (mesmo formato do card da listagem). |
+| `DELETE /api/animais/:id` | **Login obrigatório.** Só o dono exclui; apaga também a foto (banco e arquivo). 200 `{ok}`. Anúncio de outra pessoa, inexistente ou id inválido: 404. |
 | `POST/GET /api/animais/perdidos` | Atalho que fixa a categoria `PERDIDO` (`detalhes_fuga` obrigatório). Mesmo formato do `POST/GET /api/animais`. |
 | `POST/GET /api/animais/encontrados` | Atalho que fixa a categoria `ENCONTRADO` (nome opcional; `detalhes_fuga` não é aceito). |
 
@@ -96,68 +103,37 @@ Listagem: `{ itens: [...], proximoCursor: "..." | null }`. Enquanto `proximoCurs
 
 Páginas `cadastro-pet`, `meus-pets` e `perfil` exigem login (sem sessão, redirecionam ao início).
 
-## 5. Ajustes necessários no front (poucas linhas)
+## 5. Front-end (`js/`)
 
-**a) Mostrar as mensagens** (nas páginas que recebem redirecionamento: `index`, `cadastro-perfil`,
-`redefinir-senha`, `criar-nova-senha`, `cadastro-pet`):
+As páginas HTML não têm mais JavaScript escrito dentro delas: cada uma carrega **um módulo** de
+`js/paginas/` (`<script type="module" src="js/paginas/home.js">`). O servidor entrega a pasta `js/`
+em `/js`.
 
-```js
-const p = new URLSearchParams(location.search);
-if (p.get("erro")) alert(p.get("erro"));
-if (p.get("cadastro") === "ok") alert("Conta criada! Faça login.");
-if (p.get("senha") === "alterada") alert("Senha alterada! Faça login.");
+```
+js/
+├── api.js            único arquivo que chama fetch (JSON, erros -> mensagem pronta, 401 -> login)
+├── categorias.js     categoria do banco -> texto e classe de cor (ADOCAO -> "Adoção")
+├── componentes.js    pedaços de tela reutilizados (tag de status, ícone de sexo, foto)
+├── geral.js          o que toda página faz ao abrir: efeito de toque no iOS e avisos vindos da URL
+└── paginas/          um módulo por página: index, cadastro-perfil, redefinir-senha,
+                      criar-nova-senha, home, cadastro-pet, meus-pets, perfil
 ```
 
-**b) `home.html` – trocar os dados simulados pela API, com rolagem infinita:**
+| Página | O que usa da API |
+|---|---|
+| `home.html` | `GET /api/animais` (filtro por categoria + rolagem infinita por cursor) e `GET /api/animais/:id` (modal, WhatsApp em `wa.me`) |
+| `meus-pets.html` | `GET /api/animais/meus` e `DELETE /api/animais/:id` |
+| `perfil.html` | `GET`, `PATCH` e `DELETE /api/me` e `POST /api/logout` |
+| `cadastro-pet.html` | formulário nativo `POST /api/animais` (multipart) |
 
-```js
-let categoria = "TODOS", cursor = null, carregando = false;
-const grade = document.querySelector(".grid-animais");
+**Avisos:** os formulários HTML nativos voltam com parâmetros na URL (`?erro=…`, `?cadastro=ok`,
+`?senha=alterada`, `?cadastrado=1`). `js/geral.js` mostra a mensagem uma única vez e limpa a URL.
 
-async function carregarMais() {
-  if (carregando) return;
-  carregando = true;
-  const url = `/api/animais?categoria=${categoria}&limite=12` + (cursor ? `&cursor=${cursor}` : "");
-  const { itens, proximoCursor } = await (await fetch(url)).json();
-  itens.forEach((a) => grade.appendChild(criarCard(a)));
-  cursor = proximoCursor;
-  carregando = false;
-  if (!cursor) observador.disconnect();
-}
+**Segurança no front:** todo texto vindo da API entra na tela por `textContent`, nunca por
+`innerHTML`; um nome de pet como `<script>…` aparece como texto e não executa.
 
-function criarCard(a) {
-  const card = document.createElement("article");
-  card.className = "card-pet";
-  card.innerHTML = `
-    <div class="foto-pet-container"><img class="foto-pet" loading="lazy"></div>
-    <div class="info-pet"><div class="linha-topo">
-      <span class="nome-pet"></span><img class="genero-pet-icon"></div></div>`;
-  card.querySelector(".foto-pet").src = a.foto;
-  card.querySelector(".nome-pet").textContent = a.nome ?? "Sem nome"; // textContent, nunca innerHTML (XSS)
-  const icone = card.querySelector(".genero-pet-icon");
-  icone.src = a.sexoIcone;      // vem do banco
-  icone.alt = a.sexoRotulo;
-  card.addEventListener("click", () => abrirModal(a.id));
-  return card;
-}
-
-// filtros: zera a lista e recomeça
-botao.addEventListener("click", () => { categoria = botao.dataset.categoria; cursor = null; grade.innerHTML = ""; carregarMais(); });
-
-// rolagem infinita: <div id="sentinela"></div> logo após a grade
-const observador = new IntersectionObserver((e) => e[0].isIntersecting && carregarMais());
-observador.observe(document.getElementById("sentinela"));
-```
-
-No modal, busque `GET /api/animais/${id}` e monte o WhatsApp assim:
-`` `https://wa.me/${animal.whatsapp}?text=${encodeURIComponent("Olá! Vi o anúncio do pet " + animal.nome + " no BuscaPet.")}` ``
-
-**c) `cadastro-pet.html`:** funciona como está (`action="/api/animais"`, `enctype="multipart/form-data"`).
-
-### Erros encontrados nos HTML (independem do back-end)
-1. `home.html`: o link do WhatsApp está `https://whatsapp.com{dados.whatsapp}…` (falta o `/${`); o correto é `https://wa.me/${dados.whatsapp}?text=…`.
-2. `cadastro-pet.html`: o item CADASTRAR da barra inferior aponta para `cadastrar-animal.html`; o arquivo é `cadastro-pet.html`.
-3. `perfil.html`: a tag `<main class="main-perfil">` nunca é fechada.
+**Estilos compartilhados** (tag de status e suas cores, ícone de sexo, logo, mensagem de lista) ficam
+em `css/geral.css`; cada página só tem o CSS que é dela.
 
 ## 6. Decisões de segurança e desempenho
 
@@ -177,4 +153,5 @@ No modal, busque `GET /api/animais/${id}` e monte o WhatsApp assim:
 
 ## 8. Fora do que foi implementado
 
-Editar/excluir pet, "Meus Pets" com dados reais, edição e exclusão de perfil.
+- **Editar anúncio:** o botão "Editar" de Meus Pets mostra "em construção" (a página `editar-animal.html` e a rota
+  `PATCH /api/animais/:id` ainda não existem).
