@@ -17,13 +17,6 @@ body {
   gap: 10px;
 }
 
-.logo-mini {
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
 .header-meus-pets h1 {
   font-size: 1.2rem;
   color: var(--principal);
@@ -101,10 +94,19 @@ body {
   color: var(--principal);
 }
 
-.genero-pet-icon {
+.card-meu-pet .genero-pet-icon {
   width: 16px;
   height: 16px;
-  object-fit: contain;
+}
+
+/* Animação ao excluir (aplicada pelo js/paginas/meus-pets.js depois que o servidor confirma) */
+.card-meu-pet {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.card-meu-pet.removendo {
+  opacity: 0;
+  transform: translateX(50px);
 }
 
 .card-meu-pet .tag-status {

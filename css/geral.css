@@ -118,3 +118,53 @@ label {
   background-color: var(--secundaria); /*o círculo envolve apenas o emoji */
   color: var(--principal);
 }
+
+/* LOGO PEQUENA DO CABEÇALHO (todas as telas internas) */
+.logo-mini {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ÍCONE DE SEXO DO PET (home, modal e Meus Pets) */
+.genero-pet-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  align-self: center;
+}
+
+/* STATUS DO PET: a cor segue a categoria (ENUM categoria_animal) */
+.tag-status {
+  margin: 0;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status-perdido {
+  color: var(--aviso);
+}
+.status-encontrado {
+  color: var(--verde);
+}
+.status-adocao {
+  color: var(--principal);
+}
+
+/* MENSAGEM DE LISTA (carregando / vazia / erro). Some sozinha quando não há texto. */
+.estado-lista {
+  text-align: center;
+  font-size: 14px;
+  color: var(--principal-baixo);
+  padding: 20px 15px;
+}
+
+.estado-lista:empty {
+  display: none;
+}
+
+.estado-lista a {
+  color: var(--principal);
+  font-weight: bold;
+}

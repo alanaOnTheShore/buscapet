@@ -16,13 +16,6 @@ body {
   gap: 10px;
 }
 
-.logo-mini {
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
 .header-cadastro h1 {
   font-size: 1.2rem;
   color: var(--principal);

@@ -16,13 +16,6 @@ body {
   gap: 10px;
 }
 
-.logo-mini {
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
 .header-perfil h1 {
   font-size: 1.2rem;
   color: var(--principal);
@@ -77,6 +70,16 @@ body {
   padding: 4px 12px;
   border-radius: 12px;
   letter-spacing: 0.5px;
+}
+
+.badge-ong {
+  background-color: var(--principal);
+  color: var(--branco);
+}
+
+.badge-pessoa {
+  background-color: var(--secundaria-baixo);
+  color: var(--principal);
 }
 
 /* SEÇÃO DE DADOS DO FORMULÁRIO */
