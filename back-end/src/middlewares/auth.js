@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const { pool } = require('../db');
+const usuarioModel = require('../models/usuario.model');
 const { falha, comParametros } = require('../utils/responder');
 
 const NOME_COOKIE = 'buscapet_sessao';
@@ -28,11 +28,7 @@ async function carregarUsuario(req) {
     const payload = jwt.verify(token, config.jwtSecret, { algorithms: ['HS256'] });
     const id = Number.parseInt(payload.sub, 10);
     if (!Number.isInteger(id)) return null;
-    const { rows } = await pool.query(
-      'SELECT id, nome, email, telefone, tipo FROM usuarios WHERE id = $1',
-      [id]
-    );
-    return rows[0] || null;
+    return await usuarioModel.buscarPorId(id);
   } catch {
     return null;
   }
