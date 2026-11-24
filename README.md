@@ -30,8 +30,7 @@ A plataforma resolve três problemas principais enfrentados pela comunidade:
 ### **Testes & Qualidade**
 - **Jest** — Framework para testes unitários, de integração e garantia de TDD (cobertura mínima de 80%).
 
-### **Deploy & CI/CD**
-- **GitHub Actions** — Pipeline de integração e entrega contínua.
+### **Deploy**
 - **Supabase & Render** — Hospedagem do MVP em nuvem.
 
 ---
@@ -105,8 +104,8 @@ npm test
 npm start  
 ## 👥 Equipe de Desenvolvimento
 - Alana Paola Silva Nascimento — Scrum Master, Documentadora & Front-end
-- Hanna Clara Pereira da Silva — Desenvolvedora Front-end & UI/UX 
-- Hellen Fernanda Lunardi Gilli — Desenvolvedora Back-end
-- Rita de Cássia da Silva Borges — Engenheira de Banco de Dados & Back-end
+- Hanna Clara Pereira da Silva — Tester Caixa Preta & UI/UX 
+- Hellen Fernanda Lunardi Gilli — Desenvolvedora Back-end & Tester Caixa Branca
+- Rita de Cássia da Silva Borges — Engenheira de Banco de Dados, Back-end & Tester Caixa Branca
 ## 📄 Licença
 *Este projeto foi desenvolvido para fins acadêmicos no curso de Análise e Desenvolvimento de Sistemas (UNIVALI).*
