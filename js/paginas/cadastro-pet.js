@@ -11,6 +11,14 @@ const boxFuga = document.getElementById('box-detalhes-fuga');
 const inputFuga = document.getElementById('fuga-pet');
 const inputNome = document.getElementById('nome-pet');
 const labelNome = document.getElementById('label-nome-pet');
+const contadorNome = document.getElementById('contador-nome');
+
+// Contador do nome: o limite é o maxlength do próprio campo (30), que o servidor também confere.
+function atualizarContadorNome() {
+  contadorNome.textContent = `${inputNome.value.length}/${inputNome.maxLength}`;
+}
+inputNome.addEventListener('input', atualizarContadorNome);
+atualizarContadorNome();
 
 function atualizarFormularioPorSituacao(situacao) {
   const perdido = situacao === 'PERDIDO';

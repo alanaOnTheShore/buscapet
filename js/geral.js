@@ -37,9 +37,18 @@ export function mostrarAvisosDaUrl() {
   return encontrados;
 }
 
+/** PWA: registra o service worker (/sw.js) depois que a página terminou de carregar. */
+function registrarServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((erro) => console.warn('Service worker não registrado:', erro));
+  });
+}
+
 /** Chame uma vez no início do script de cada página. */
 export function iniciarPagina() {
   // efeito de :active nos botões do iOS
   document.addEventListener('touchstart', () => {}, true);
+  registrarServiceWorker();
   return mostrarAvisosDaUrl();
 }

@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#411c57" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="/img/pwa/icon-192.png" />
+    <link rel="apple-touch-icon" href="/img/pwa/apple-touch-icon.png" />
     <title>Cadastrar Pet - BuscaPet</title>
     <link rel="stylesheet" href="css/geral.css" />
     <link rel="stylesheet" href="css/cadastro-pet.css" />
@@ -46,9 +50,10 @@
           id="nome-pet"
           name="nome"
           placeholder="Qual é o nome do pet?"
-          maxlength="80"
+          maxlength="30"
           required
         />
+        <small id="contador-nome" class="contador-campo" aria-live="polite"></small>
 
         <!-- CAMPO DINÂMICO: DETALHES DA FUGA (Só aparece se for PERDIDO) -->
         <div id="box-detalhes-fuga" style="display: none">

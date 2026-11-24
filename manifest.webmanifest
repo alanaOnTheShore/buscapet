@@ -1,0 +1,18 @@
+{
+  "id": "/",
+  "name": "BuscaPet",
+  "short_name": "BuscaPet",
+  "description": "Encontre pets perdidos, ajude animais encontrados e adote um novo amigo.",
+  "lang": "pt-BR",
+  "start_url": "/home.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#411c57",
+  "background_color": "#fff8f2",
+  "icons": [
+    { "src": "/img/pwa/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/img/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/img/pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

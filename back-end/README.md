@@ -94,6 +94,8 @@ Regras por categoria (`src/utils/regrasAnimal.js`): **ADOCAO** exige nome e não
 `detalhes_fuga` · **ENCONTRADO** tem nome opcional e não aceita fuga. Em todas: `sexo` (M/F), `descricao` e `foto` são
 obrigatórios, e o dono do anúncio vem sempre da sessão (o campo `usuario_id` do corpo é ignorado).
 
+O `nome` aceita **no máximo 30 caracteres** (constante `NOME_MAX` em `regrasAnimal.js`; o `maxlength` de `cadastro-pet.html` usa o mesmo número; a coluna do banco continua `VARCHAR(80)`).
+
 `POST` devolve 201 `{ animal: { id, categoria, nome, sexo, sexoRotulo, sexoIcone, foto } }`.
 
 Cada animal devolve o gênero **já traduzido a partir do que está no banco**:
@@ -155,3 +157,10 @@ em `css/geral.css`; cada página só tem o CSS que é dela.
 
 - **Editar anúncio:** o botão "Editar" de Meus Pets mostra "em construção" (a página `editar-animal.html` e a rota
   `PATCH /api/animais/:id` ainda não existem).
+
+## PWA (app instalável)
+
+- `manifest.webmanifest` (nome, cores, ícones em `img/pwa/`) e `sw.js` (service worker) ficam na **raiz** do front e são servidos por rotas próprias no `app.js` (o escopo do service worker é a pasta onde ele está).
+- O service worker guarda só `/css`, `/js` e imagens; **nunca** HTML nem `/api` (dados de login e perfil não ficam em cache). Sem internet, ou com o servidor dormindo (502–504), mostra `offline.html`.
+- Para forçar a atualização do cache em todos os aparelhos, aumente `VERSAO` em `sw.js`.
+- Teste: `tests/pwa.test.js`. Instalação exige HTTPS (o Render já fornece).

@@ -103,7 +103,7 @@ describe('Cadastro de pet para adoção (POST /api/animais)', () => {
     ['sem categoria', { categoria: undefined }, 'categoria'],
     ['categoria inválida', { categoria: 'ADOTADO' }, 'categoria'],
     ['sem nome', { nome: '' }, 'nome'],
-    ['nome muito longo', { nome: 'a'.repeat(81) }, 'nome'],
+    ['nome muito longo (31 caracteres)', { nome: 'a'.repeat(31) }, 'nome'],
     ['sem sexo', { sexo: undefined }, 'sexo'],
     ['sexo inválido', { sexo: 'X' }, 'sexo'],
     ['sem descrição', { descricao: '   ' }, 'descricao'],

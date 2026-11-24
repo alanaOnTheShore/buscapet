@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#411c57" />
+    <title>Sem conexão - BuscaPet</title>
+    <!-- CSS dentro da página de propósito: ela precisa funcionar sem baixar mais nada -->
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 24px;
+        text-align: center;
+        background-color: #fff8f2;
+        color: #411c57;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
+      img {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      p {
+        max-width: 320px;
+        font-size: 15px;
+        line-height: 1.5;
+        color: #6a515b;
+      }
+      button {
+        min-height: 48px;
+        padding: 0 28px;
+        border: none;
+        border-radius: 8px;
+        background-color: #411c57;
+        color: #ffffff;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="/img/logo.png" alt="BuscaPet" />
+    <h1>Sem conexão</h1>
+    <p>
+      Não foi possível falar com o BuscaPet agora. Verifique sua internet e tente de novo.
+    </p>
+    <button type="button" id="tentar-novamente">Tentar novamente</button>
+    <script>
+      document.getElementById('tentar-novamente').addEventListener('click', () => {
+        window.location.href = '/home.html';
+      });
+    </script>
+  </body>
+</html>

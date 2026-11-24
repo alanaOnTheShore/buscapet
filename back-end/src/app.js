@@ -12,7 +12,7 @@ const animaisRoutes = require('./routes/animais.routes');
 const perdidosRoutes = require('./routes/perdidos.routes');
 const encontradosRoutes = require('./routes/encontrados.routes');
 
-const PAGINAS_PUBLICAS = new Set(['index', 'home', 'cadastro-perfil', 'redefinir-senha', 'criar-nova-senha']);
+const PAGINAS_PUBLICAS = new Set(['index', 'home', 'cadastro-perfil', 'redefinir-senha', 'criar-nova-senha', 'offline']);
 const PAGINAS_PRIVADAS = new Set(['cadastro-pet', 'meus-pets', 'perfil']);
 
 const app = express();
@@ -36,6 +36,18 @@ app.use('/js', express.static(path.join(config.raizFront, 'js')));
 app.use('/img', express.static(path.join(config.raizFront, 'img'), { maxAge: '7d' }));
 // Fotos têm nome aleatório e nunca mudam: podem ficar 30 dias no cache do celular
 app.use('/uploads', express.static(config.uploadDir, { maxAge: '30d', immutable: true, index: false }));
+
+// --- PWA ---
+// O service worker precisa ficar na RAIZ (/sw.js): o escopo dele é a pasta onde ele está.
+app.get('/manifest.webmanifest', (req, res) => {
+  res.type('application/manifest+json');
+  res.sendFile(path.join(config.raizFront, 'manifest.webmanifest'));
+});
+app.get('/sw.js', (req, res) => {
+  res.set('Cache-Control', 'no-cache'); // o navegador sempre confere se existe versão nova
+  res.type('application/javascript');
+  res.sendFile(path.join(config.raizFront, 'sw.js'));
+});
 
 // --- Páginas ---
 app.get('/', (req, res) => res.redirect('/index.html'));

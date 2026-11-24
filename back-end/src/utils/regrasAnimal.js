@@ -6,6 +6,9 @@
 const { texto, exigirValido } = require('./validacao');
 const { normalizarSexo } = require('./sexo');
 
+// Limite do nome no cadastro (a coluna do banco aceita até 80; o front usa o mesmo número em cadastro-pet.html)
+const NOME_MAX = 30;
+
 const REGRAS = {
   ADOCAO: { nomeObrigatorio: true, fuga: 'proibida' },
   PERDIDO: { nomeObrigatorio: true, fuga: 'obrigatoria' },
@@ -29,7 +32,7 @@ function validarAnimal(body, arquivo, categoriaFixa = null) {
   const campos = {};
   if (!regra) campos.categoria = 'Selecione a situação do pet.';
   if (regra && regra.nomeObrigatorio && !nome) campos.nome = 'Informe o nome do pet.';
-  if (nome && nome.length > 80) campos.nome = 'O nome pode ter no máximo 80 caracteres.';
+  if (nome && nome.length > NOME_MAX) campos.nome = `O nome pode ter no máximo ${NOME_MAX} caracteres.`;
   if (!sexo) campos.sexo = 'Selecione o sexo do pet.';
   if (!descricao) campos.descricao = 'Informe a descrição do pet.';
   else if (descricao.length > 2000) campos.descricao = 'A descrição pode ter no máximo 2000 caracteres.';
