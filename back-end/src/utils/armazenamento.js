@@ -12,6 +12,18 @@ const SUPABASE_URL = process.env.SUPABASE_URL?.replace(/\/$/, '');
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const BUCKET = 'pets';
 
+/**
+ * Cabeçalhos de autenticação do Supabase Storage.
+ * As chaves novas (sb_secret_...) NÃO são JWT: vão só em `apikey`. Mandá-las em
+ * `Authorization: Bearer` faz o Supabase recusar com "Invalid JWT".
+ * As chaves antigas (service_role, começam com "eyJ") são JWT e precisam do Bearer.
+ */
+function cabecalhosSupabase(extra = {}) {
+  const cabecalhos = { apikey: SUPABASE_SERVICE_KEY, ...extra };
+  if (!SUPABASE_SERVICE_KEY.startsWith('sb_')) cabecalhos.Authorization = `Bearer ${SUPABASE_SERVICE_KEY}`;
+  return cabecalhos;
+}
+
 async function salvarImagem(buffer) {
   const nome = `${crypto.randomUUID()}.webp`;
 
@@ -19,11 +31,7 @@ async function salvarImagem(buffer) {
   if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
     const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${nome}`, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
-        apikey: SUPABASE_SERVICE_KEY,
-        'Content-Type': 'image/webp',
-      },
+      headers: cabecalhosSupabase({ 'Content-Type': 'image/webp' }),
       body: buffer,
     });
 
@@ -50,10 +58,7 @@ async function removerImagem(url) {
     const nome = url.slice(prefixoSupabase.length);
     await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${nome}`, {
       method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
-        apikey: SUPABASE_SERVICE_KEY,
-      },
+      headers: cabecalhosSupabase(),
     }).catch(() => {});
     return;
   }
