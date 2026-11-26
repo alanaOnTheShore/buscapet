@@ -1,7 +1,7 @@
 -- =====================================================================
 -- BuscaPet - Esquema do banco de dados (PostgreSQL) - versão 2
 -- Novidades em relação à v1:
---   * animais.sexo (ENUM 'M'/'F')  -> ícones de gênero exibidos a partir dele
+--   * animais.sexo (ENUM 'M'/'F')  -> ícones de gênero exibidos a partir dele (opcional só em ENCONTRADO)
 --   * tabela tokens_recuperacao    -> "esqueci minha senha"
 --   * índices pensados para paginação por cursor (home com rolagem infinita)
 --   * Row Level Security ativado (sem políticas): bloqueia acesso direto pela
@@ -39,7 +39,7 @@ CREATE TABLE animais (
     usuario_id    INTEGER          NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
     categoria     categoria_animal NOT NULL,
     nome          VARCHAR(80),
-    sexo          sexo_animal      NOT NULL,
+    sexo          sexo_animal,
     descricao     TEXT             NOT NULL,
     detalhes_fuga TEXT,
     criado_em     TIMESTAMP        NOT NULL DEFAULT NOW(),
@@ -49,6 +49,10 @@ CREATE TABLE animais (
     ),
     CONSTRAINT ck_animais_nome CHECK (
         categoria = 'ENCONTRADO' OR (nome IS NOT NULL AND length(trim(nome)) > 0)
+    ),
+    -- quem encontra um animal nem sempre sabe o sexo; nas demais categorias ele é obrigatório
+    CONSTRAINT ck_animais_sexo CHECK (
+        categoria = 'ENCONTRADO' OR sexo IS NOT NULL
     )
 );
 

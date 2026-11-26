@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#411c57" />
-    <title>Sem conexão - BuscaPet</title>
+    <title>Conectando - BuscaPet</title>
     <!-- CSS dentro da página de propósito: ela precisa funcionar sem baixar mais nada -->
     <style>
       * {
@@ -39,6 +39,9 @@
         line-height: 1.5;
         color: #6a515b;
       }
+      .dica {
+        font-size: 13px;
+      }
       button {
         min-height: 48px;
         padding: 0 28px;
@@ -55,15 +58,25 @@
   </head>
   <body>
     <img src="/img/logo.png" alt="BuscaPet" />
-    <h1>Sem conexão</h1>
-    <p>
-      Não foi possível falar com o BuscaPet agora. Verifique sua internet e tente de novo.
-    </p>
+    <h1>Conectando...</h1>
+    <p>Estamos conectando com nossos servidores, aguarde um momento.</p>
+    <p class="dica">Se demorar muito, verifique sua internet.</p>
     <button type="button" id="tentar-novamente">Tentar novamente</button>
     <script>
-      document.getElementById('tentar-novamente').addEventListener('click', () => {
+      const ir = () => {
         window.location.href = '/home.html';
-      });
+      };
+      document.getElementById('tentar-novamente').addEventListener('click', ir);
+
+      // O servidor gratuito "dorme" e leva um tempo para acordar: tenta de novo sozinho a cada 5 segundos
+      // e entra no app assim que ele responde.
+      setInterval(() => {
+        fetch('/home.html', { cache: 'no-store' })
+          .then((resposta) => {
+            if (resposta.ok) ir();
+          })
+          .catch(() => {});
+      }, 5000);
     </script>
   </body>
 </html>

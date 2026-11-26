@@ -136,3 +136,43 @@ select:focus {
   color: var(--principal-baixo);
   margin: -14px 0 16px;
 }
+
+/* Contador da descrição (textarea tem margem inferior de 20px) */
+textarea + .contador-campo {
+  margin: -14px 0 20px;
+}
+
+/* AVISO ANTES DE ESCOLHER A FOTO */
+.fundo-aviso {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 24px;
+  background-color: rgba(0, 0, 0, 0.55);
+  align-items: center;
+  justify-content: center;
+}
+
+.fundo-aviso.mostrar {
+  display: flex;
+}
+
+.card-aviso {
+  width: 100%;
+  max-width: 340px;
+  padding: 24px 20px 20px;
+  background-color: var(--baixissimo);
+  border: 1px solid var(--secundaria);
+  border-radius: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-aviso p {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--principal);
+}

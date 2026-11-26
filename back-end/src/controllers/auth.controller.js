@@ -13,6 +13,7 @@ const {
   erroDeSenha,
   validarTelefone,
   exigirValido,
+  MSG_TELEFONE_INVALIDO,
 } = require('../utils/validacao');
 
 const CUSTO_BCRYPT = 10;
@@ -44,10 +45,10 @@ async function cadastrar(req, res) {
   const tipo = (texto(req.body.tipo) || 'PESSOA').toUpperCase();
 
   const campos = {};
-  const erroNome = erroDeNome(nome);
+  const erroNome = erroDeNome(nome, tipo);
   if (erroNome) campos.nome = erroNome;
   if (!email) campos.email = 'Informe um e-mail válido (ex: nome@dominio.com).';
-  if (!telefone) campos.telefone = 'Informe um telefone válido com DDD.';
+  if (!telefone) campos.telefone = MSG_TELEFONE_INVALIDO;
   if (!['PESSOA', 'ONG'].includes(tipo)) campos.tipo = 'Tipo de conta inválido.';
   Object.assign(campos, errosDeSenha(senha, confirmacao));
   exigirValido(campos);

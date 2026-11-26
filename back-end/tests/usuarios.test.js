@@ -34,7 +34,7 @@ const OUTRO_USUARIO = { nome: 'Maria Silva', email: 'maria@teste.com', telefone:
 /** Cadastra um pet de verdade (com upload da foto), como o formulário do front faz. */
 function enviarPet(cliente, campos = {}) {
   let req = cliente.post('/api/animais').set('Accept', 'application/json');
-  const dados = { categoria: 'ADOCAO', nome: 'Rex', sexo: 'M', descricao: 'Cachorro dócil.', detalhes_fuga: '', ...campos };
+  const dados = { categoria: 'ADOCAO', nome: 'Rex', sexo: 'M', descricao: 'Cachorro dócil, castrado e muito carinhoso.', detalhes_fuga: '', ...campos };
   for (const [chave, valor] of Object.entries(dados)) req = req.field(chave, valor);
   return req.attach('foto', foto, { filename: 'foto.jpg', contentType: 'image/jpeg' });
 }
@@ -107,6 +107,9 @@ describe('Editar perfil (PATCH /api/me)', () => {
     ['nome muito longo (121 caracteres)', { nome: 'a'.repeat(121) }, 'nome'],
     ['sem telefone', { telefone: '' }, 'telefone'],
     ['telefone inválido', { telefone: '123' }, 'telefone'],
+    ['DDD terminado em 0', { telefone: '(10) 99999-8888' }, 'telefone'],
+    ['nome da ONG com @', { nome: 'ONG @Patas' }, 'nome'],
+    ['nome da ONG com ?', { nome: 'ONG Patas?' }, 'nome'],
   ])('rejeita %s (400) e não altera nada', async (_descricao, alteracao, campo) => {
     const agent = await entrar(request, app);
 

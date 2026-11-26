@@ -224,10 +224,11 @@ describe('1. Unitários - estrutura e regras', () => {
     await expect(criarFoto(a2, 1)).resolves.not.toThrow();
   });
 
-  test('17 - animal sem sexo é recusado (23502)', async () => {
+  test('17 - animal sem sexo é recusado em ADOCAO e PERDIDO (23514), mas aceito em ENCONTRADO', async () => {
     const u = await criarUsuario();
-    const erro = await codigoErro(criarAnimal(u, { sexo: null }));
-    expect(erro).toBe('23502');
+    expect(await codigoErro(criarAnimal(u, { sexo: null }))).toBe('23514');
+    expect(await codigoErro(criarAnimal(u, { categoria: 'PERDIDO', sexo: null, detalhes_fuga: 'Fugiu ontem' }))).toBe('23514');
+    await expect(criarAnimal(u, { categoria: 'ENCONTRADO', nome: null, sexo: null })).resolves.toBeDefined();
   });
 
   test('18 - sexo fora de M/F é recusado (22P02)', async () => {

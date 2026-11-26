@@ -164,3 +164,16 @@ em `css/geral.css`; cada página só tem o CSS que é dela.
 - O service worker guarda só `/css`, `/js` e imagens; **nunca** HTML nem `/api` (dados de login e perfil não ficam em cache). Sem internet, ou com o servidor dormindo (502–504), mostra `offline.html`.
 - Para forçar a atualização do cache em todos os aparelhos, aumente `VERSAO` em `sw.js`.
 - Teste: `tests/pwa.test.js`. Instalação exige HTTPS (o Render já fornece).
+
+## Regras dos campos de texto
+
+Valem no servidor (`src/utils/validacao.js`, `regrasAnimal.js`) e, iguais, no front (`js/validacoes.js`). Letras com acento (ç, ã, ê, õ...) são válidas em todos os campos.
+
+| Campo | Regra | Mensagem |
+|---|---|---|
+| Nome (pessoa física) | só letras, espaço, hífen e apóstrofo | `Digite um nome válido.` |
+| Nome (ONG) | aceita números e pontuação, mas não `@ # ! * ?` | `Digite um nome válido.` |
+| Telefone | 10 ou 11 dígitos (55 opcional); o DDD não começa nem termina em 0 | `Telefone inválido.` |
+| Nome do pet | até 30 caracteres; letras, números, espaço, hífen e apóstrofo | `Digite um nome válido.` |
+| Descrição do pet | mínimo 30 e máximo 2000 caracteres; só letras, números e pontuação comum (`. , ; : ! ? ( ) ' " - / %`) | mensagem do mínimo / de caracteres especiais |
+| Detalhes da fuga | máximo 1000; mesma regra de caracteres da descrição | mensagem de caracteres especiais |

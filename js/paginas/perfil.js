@@ -1,6 +1,7 @@
 /** Perfil: mostra e edita os dados do usuário logado (GET/PATCH/DELETE /api/me) e faz logout. */
 import { api } from '../api.js';
 import { iniciarPagina } from '../geral.js';
+import { validarCampo, erroDeNomeUsuario, erroDeTelefone } from '../validacoes.js';
 
 iniciarPagina();
 
@@ -12,11 +13,20 @@ const campoEmail = document.getElementById('email-perfil');
 const campoTelefone = document.getElementById('telefone-perfil');
 const botaoSalvar = form.querySelector('button[type="submit"]');
 
+// a regra do nome depende do tipo da conta (carregado junto com os dados)
+let tipoConta = 'PESSOA';
+const conferirNome = validarCampo(campoNome, () => erroDeNomeUsuario(campoNome.value, tipoConta));
+const conferirTelefone = validarCampo(campoTelefone, () => erroDeTelefone(campoTelefone.value));
+
 function preencher(usuario) {
   nomeTopo.textContent = usuario.nome;
   campoNome.value = usuario.nome;
   campoEmail.value = usuario.email;
   campoTelefone.value = usuario.telefone;
+
+  tipoConta = usuario.tipo;
+  conferirNome();
+  conferirTelefone();
 
   const ong = usuario.tipo === 'ONG';
   badge.textContent = ong ? 'ONG' : 'PESSOA';

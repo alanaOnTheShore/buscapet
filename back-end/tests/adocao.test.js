@@ -37,7 +37,7 @@ function enviarPet(cliente, campos = {}, arquivo = { buffer: foto, nome: 'foto.j
     categoria: 'ADOCAO',
     nome: 'Rex',
     sexo: 'M',
-    descricao: 'Cachorro dócil, castrado.',
+    descricao: 'Cachorro dócil, castrado e muito carinhoso.',
     detalhes_fuga: '', // o formulário envia o campo vazio fora de "Perdido"
     ...campos,
   };
@@ -94,6 +94,17 @@ describe('Cadastro de pet para adoção (POST /api/animais)', () => {
     expect(meta.width).toBe(300);
   });
 
+  test('sexo continua obrigatório em ADOCAO e PERDIDO (só ENCONTRADO pode ficar sem)', async () => {
+    const adocao = await enviarPet(agent, { sexo: '' });
+    expect(adocao.status).toBe(400);
+    expect(adocao.body.campos.sexo).toBeDefined();
+
+    const perdido = await enviarPet(agent, { categoria: 'PERDIDO', detalhes_fuga: 'Fugiu ontem à noite', sexo: '' });
+    expect(perdido.status).toBe(400);
+    expect(perdido.body.campos.sexo).toBeDefined();
+    expect((await pool.query('SELECT 1 FROM animais')).rowCount).toBe(0);
+  });
+
   test('aceita sexo em minúsculas e normaliza para M/F', async () => {
     await enviarPet(agent, { sexo: 'f' }).expect(201);
     expect((await pool.query('SELECT sexo FROM animais')).rows[0].sexo).toBe('F');
@@ -108,12 +119,28 @@ describe('Cadastro de pet para adoção (POST /api/animais)', () => {
     ['sexo inválido', { sexo: 'X' }, 'sexo'],
     ['sem descrição', { descricao: '   ' }, 'descricao'],
     ['descrição gigante', { descricao: 'a'.repeat(2001) }, 'descricao'],
+    ['descrição com menos de 30 caracteres', { descricao: 'a'.repeat(29) }, 'descricao'],
+    ['descrição com caractere especial (@)', { descricao: 'Cachorro dócil, castrado. Fale comigo @fulano' }, 'descricao'],
+    ['nome com caractere especial (@)', { nome: 'Rex@' }, 'nome'],
+    ['nome com caractere especial (#)', { nome: '#Rex' }, 'nome'],
   ])('rejeita %s (400) sem gravar nem deixar foto órfã', async (_d, alteracao, campo) => {
     const res = await enviarPet(agent, alteracao);
     expect(res.status).toBe(400);
     expect(res.body.campos[campo]).toBeDefined();
     expect((await pool.query('SELECT 1 FROM animais')).rowCount).toBe(0);
     expect(contarUploads()).toBe(0);
+  });
+
+  test('aceita acentos e pontuação comum no nome e na descrição, e a descrição com exatamente 30 caracteres', async () => {
+    const acentuado = await enviarPet(agent, {
+      nome: 'Conceição',
+      descricao: 'Ele é muito carinhoso (nunca mordeu!). Não late à noite: só “pede” colo.',
+    });
+    expect(acentuado.status).toBe(201);
+    expect(acentuado.body.animal.nome).toBe('Conceição');
+
+    const limite = await enviarPet(agent, { descricao: 'a'.repeat(30) });
+    expect(limite.status).toBe(201);
   });
 
   test('detalhes de fuga só se aplicam a pets perdidos (ADOCAO com fuga -> 400)', async () => {
@@ -161,7 +188,7 @@ describe('Cadastro de pet para adoção (POST /api/animais)', () => {
       .field('categoria', 'ADOCAO')
       .field('nome', 'Rex')
       .field('sexo', 'M')
-      .field('descricao', 'Dócil')
+      .field('descricao', 'Cachorro dócil, castrado e muito carinhoso.')
       .attach('foto', foto, { filename: 'f.jpg', contentType: 'image/jpeg' });
     expect(res.status).toBe(303);
     expect(res.headers.location).toBe('/meus-pets.html?cadastrado=1');

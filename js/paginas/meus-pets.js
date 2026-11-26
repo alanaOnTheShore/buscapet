@@ -72,7 +72,7 @@ async function excluirAnuncio(animal, card, botao) {
 }
 
 async function carregar() {
-  mostrarEstado('Carregando seus pets...');
+  mostrarEstado('Estamos conectando com nossos servidores, aguarde um momento...');
   try {
     const { itens } = await api('/api/animais/meus');
     lista.replaceChildren(...itens.map(criarCard));

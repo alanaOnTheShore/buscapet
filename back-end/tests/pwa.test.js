@@ -58,7 +58,7 @@ describe('PWA', () => {
     const res = await request(app).get('/offline.html');
 
     expect(res.status).toBe(200);
-    expect(res.text).toContain('Sem conexão');
+    expect(res.text).toContain('Estamos conectando com nossos servidores');
   });
 
   test('o service worker não intercepta a API nem guarda HTML', () => {

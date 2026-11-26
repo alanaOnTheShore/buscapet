@@ -63,14 +63,15 @@
             name="detalhes_fuga"
             placeholder="Quando, onde e como ele fugiu?"
             rows="3"
+            maxlength="1000"
           ></textarea>
         </div>
 
         <!-- SEXO -->
-        <label for="sexo-pet">Sexo *</label>
+        <label for="sexo-pet" id="label-sexo-pet">Sexo *</label>
         <div class="custom-select">
           <select id="sexo-pet" name="sexo" required>
-            <option value="" disabled selected hidden>
+            <option value="" id="opcao-sexo-vazia" disabled selected hidden>
               Selecione o sexo...
             </option>
             <option value="M">Macho</option>
@@ -85,8 +86,10 @@
           name="descricao"
           placeholder="Diga características marcantes, temperamento, etc. Neste campo você também pode informar se o pet é castrado ou não."
           rows="4"
+          maxlength="2000"
           required
         ></textarea>
+        <small id="contador-descricao" class="contador-campo" aria-live="polite"></small>
 
         <!-- UPLOAD DE FOTO (Tabela fotos_animal do banco) -->
         <label for="foto-pet">Adicionar Foto *</label>
@@ -106,6 +109,17 @@
         </button>
       </form>
     </main>
+
+    <!-- AVISO ANTES DE ESCOLHER A FOTO -->
+    <div id="aviso-foto" class="fundo-aviso" role="dialog" aria-modal="true" aria-labelledby="aviso-foto-texto">
+      <div class="card-aviso">
+        <p id="aviso-foto-texto">
+          Escolha uma foto em que o pet esteja no centro! A imagem será cortada
+          ao exibir no feed.
+        </p>
+        <button type="button" id="aviso-foto-ok" class="btn-salvar-pet">Ok</button>
+      </div>
+    </div>
 
     <!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA -->
     <nav class="nav-inferior">

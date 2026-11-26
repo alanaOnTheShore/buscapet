@@ -21,8 +21,12 @@ export function criarTagStatus(categoria, tag = 'span') {
   return el(tag, `tag-status ${classe}`.trim(), rotulo);
 }
 
-/** O ícone e o rótulo do sexo já vêm prontos da API (traduzidos a partir do banco). */
+/**
+ * O ícone e o rótulo do sexo já vêm prontos da API (traduzidos a partir do banco).
+ * Pet encontrado pode não ter sexo informado: nesse caso não há ícone (devolve um fragmento vazio).
+ */
 export function criarIconeSexo(animal) {
+  if (!animal.sexoIcone) return document.createDocumentFragment();
   const icone = el('img', 'genero-pet-icon');
   icone.src = animal.sexoIcone;
   icone.alt = animal.sexoRotulo;

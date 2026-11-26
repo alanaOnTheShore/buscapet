@@ -44,7 +44,7 @@ const USUARIO_B = { nome: 'Maria Silva', email: 'b@teste.com', telefone: '(11) 9
 /** Envia o formulário de cadastro de pet (multipart), como o front faz. */
 function enviarPet(cliente, campos = {}, { json = true } = {}) {
   let req = cliente.post('/api/animais').set('Accept', json ? 'application/json' : 'text/html');
-  const dados = { categoria: 'ADOCAO', nome: 'Rex', sexo: 'M', descricao: 'Cachorro dócil.', detalhes_fuga: '', ...campos };
+  const dados = { categoria: 'ADOCAO', nome: 'Rex', sexo: 'M', descricao: 'Cachorro dócil, castrado e muito carinhoso.', detalhes_fuga: '', ...campos };
   for (const [chave, valor] of Object.entries(dados)) req = req.field(chave, valor);
   return req.attach('foto', foto, { filename: 'foto.jpg', contentType: 'image/jpeg' });
 }

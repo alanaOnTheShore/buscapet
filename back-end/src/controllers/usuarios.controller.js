@@ -1,5 +1,5 @@
 const { sucesso } = require('../utils/responder');
-const { texto, validarTelefone, erroDeNome, exigirValido } = require('../utils/validacao');
+const { texto, validarTelefone, erroDeNome, exigirValido, MSG_TELEFONE_INVALIDO } = require('../utils/validacao');
 const { removerImagem } = require('../utils/armazenamento');
 const { encerrarSessao } = require('../middlewares/auth');
 const usuarioModel = require('../models/usuario.model');
@@ -10,9 +10,9 @@ async function atualizarPerfil(req, res) {
   const telefone = validarTelefone(req.body.telefone);
 
   const campos = {};
-  const erroNome = erroDeNome(nome);
+  const erroNome = erroDeNome(nome, req.usuario.tipo); // a regra do nome depende do tipo da conta
   if (erroNome) campos.nome = erroNome;
-  if (!telefone) campos.telefone = 'Informe um telefone válido com DDD.';
+  if (!telefone) campos.telefone = MSG_TELEFONE_INVALIDO;
   exigirValido(campos);
 
   // o id vem SEMPRE da sessão, nunca do corpo da requisição

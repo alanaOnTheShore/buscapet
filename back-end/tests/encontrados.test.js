@@ -61,7 +61,7 @@ describe('Módulo de Animais Encontrados', () => {
   });
 
   it('deve retornar erro 400 se tentar enviar detalhes_fuga num animal ENCONTRADO', async () => {
-    const response = await enviar(agent, { descricao: 'Cachorro caramelo.', detalhes_fuga: 'Fugiu ontem' });
+    const response = await enviar(agent, { descricao: 'Cachorro caramelo encontrado perto da praça.', detalhes_fuga: 'Fugiu ontem' });
 
     expect(response.status).toBe(400);
     expect(response.body.campos.detalhes_fuga).toMatch(/pets perdidos/i);
@@ -103,11 +103,28 @@ describe('Módulo de Animais Encontrados', () => {
     expect(itens[0]).toMatchObject({ sexo: 'F', sexoRotulo: 'Fêmea', sexoIcone: '/img/icon-sexo/fem.png' });
   });
 
-  it('exige sexo e descrição', async () => {
-    const semSexo = await enviar(agent, { sexo: undefined });
-    expect(semSexo.status).toBe(400);
-    expect(semSexo.body.campos.sexo).toBeDefined();
+  it('o sexo é opcional: sem sexo (ou em branco) cadastra, e a API devolve sexo/ícone nulos', async () => {
+    const semCampo = await enviar(agent, { sexo: undefined });
+    expect(semCampo.status).toBe(201);
+    expect(semCampo.body.animal.sexo).toBeNull();
 
+    const emBranco = await enviar(agent, { sexo: '' });
+    expect(emBranco.status).toBe(201);
+
+    expect((await pool.query('SELECT sexo FROM animais')).rows).toEqual([{ sexo: null }, { sexo: null }]);
+    const { itens } = (await request(app).get('/api/animais/encontrados')).body;
+    expect(itens[0]).toMatchObject({ sexo: null, sexoRotulo: null, sexoIcone: null });
+    const detalhe = (await request(app).get(`/api/animais/${itens[0].id}`)).body.animal;
+    expect(detalhe).toMatchObject({ sexo: null, sexoIcone: null });
+  });
+
+  it('sexo preenchido mas inválido continua sendo recusado, mesmo sendo opcional', async () => {
+    const res = await enviar(agent, { sexo: 'X' });
+    expect(res.status).toBe(400);
+    expect(res.body.campos.sexo).toBeDefined();
+  });
+
+  it('exige descrição', async () => {
     const semDescricao = await enviar(agent, { descricao: ' ' });
     expect(semDescricao.status).toBe(400);
     expect(semDescricao.body.campos.descricao).toBeDefined();

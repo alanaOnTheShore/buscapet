@@ -160,7 +160,7 @@ body {
 /* CARDS DOS PETS */
 .grid-animais {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* minmax(0, ...): a foto nunca alarga a coluna */
   gap: 15px;
   padding: 15px;
 }
@@ -176,15 +176,22 @@ body {
 }
 
 .foto-pet-container {
+  position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 1; /* quadrado fixo: a foto é cortada para caber, nunca estica o card */
+  overflow: hidden;
   background-color: var(--secundaria-baixo);
 }
 
+/* Em posição absoluta a foto não conta na altura do card: uma imagem comprida não o alonga
+   (e o card vizinho da mesma linha não fica com sobra branca) */
 .foto-pet {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .info-pet {
@@ -231,12 +238,16 @@ body {
 }
 
 .detalhes-foto-container {
+  position: relative;
   width: 100%;
   aspect-ratio: 16 / 10; /* Foto em proporção de paisagem elegante */
+  overflow: hidden;
   background-color: var(--secundaria-baixo);
 }
 
 .detalhes-foto-container img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;

@@ -13,9 +13,10 @@ function normalizarSexo(valor) {
   return SEXOS[sexo] ? sexo : null;
 }
 
-/** Campos de gênero que a API devolve junto de cada animal. */
+/** Campos de gênero que a API devolve junto de cada animal. Sem sexo (pet encontrado), tudo vem null. */
 function descreverSexo(sexo) {
   const dados = SEXOS[sexo];
+  if (!dados) return { sexo: null, sexoRotulo: null, sexoIcone: null };
   return { sexo, sexoRotulo: dados.rotulo, sexoIcone: dados.icone };
 }
 

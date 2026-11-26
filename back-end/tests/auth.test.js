@@ -42,6 +42,24 @@ describe('Cadastro (POST /cadastrar)', () => {
     expect(res.body.erro).toMatch(/já está cadastrado/i);
   });
 
+  test('aceita acentos (ç, ã, ê...) no nome de pessoa e números/pontuação no nome de ONG', async () => {
+    const pessoa = await request(app)
+      .post('/cadastrar')
+      .send({ ...DADOS_USUARIO, tipo: 'PESSOA', nome: "João d'Ávila-Conceição" });
+    expect(pessoa.status).toBe(201);
+
+    const ong = await request(app)
+      .post('/cadastrar')
+      .send({ ...DADOS_USUARIO, email: 'outra@teste.com', nome: 'Abrigo 4 Patas & Cia. (São José)' });
+    expect(ong.status).toBe(201);
+  });
+
+  test('a mensagem de nome inválido é "Digite um nome válido." e a de telefone é "Telefone inválido."', async () => {
+    const res = await request(app).post('/cadastrar').send({ ...DADOS_USUARIO, nome: 'Maria 2', telefone: '(10) 99999-8888' });
+    expect(res.status).toBe(400);
+    expect(res.body.campos).toMatchObject({ nome: 'Digite um nome válido.', telefone: 'Telefone inválido.' });
+  });
+
   test('tipo padrão é PESSOA', async () => {
     const { tipo, ...semTipo } = DADOS_USUARIO;
     const res = await request(app).post('/cadastrar').send(semTipo);
@@ -52,6 +70,15 @@ describe('Cadastro (POST /cadastrar)', () => {
   test.each([
     ['nome vazio', { nome: '  ' }, 'nome'],
     ['nome com mais de 120 caracteres', { nome: 'a'.repeat(121) }, 'nome'],
+    ['nome de pessoa com número', { nome: 'Maria 2' }, 'nome'],
+    ['nome de pessoa com símbolo (@)', { nome: 'Maria@Silva' }, 'nome'],
+    ['nome de ONG com @', { tipo: 'ONG', nome: 'ONG @Patas' }, 'nome'],
+    ['nome de ONG com #', { tipo: 'ONG', nome: 'ONG #1' }, 'nome'],
+    ['nome de ONG com !', { tipo: 'ONG', nome: 'ONG Patas!' }, 'nome'],
+    ['nome de ONG com *', { tipo: 'ONG', nome: 'ONG Patas*' }, 'nome'],
+    ['nome de ONG com ?', { tipo: 'ONG', nome: 'ONG Patas?' }, 'nome'],
+    ['DDD terminado em 0', { telefone: '(10) 99999-8888' }, 'telefone'],
+    ['DDD terminado em 0 (sem máscara, com DDI)', { telefone: '5530999998888' }, 'telefone'],
     ['e-mail inválido', { email: 'abc' }, 'email'],
     ['e-mail sem domínio', { email: 'abc@' }, 'email'],
     ['telefone curto', { telefone: '123' }, 'telefone'],

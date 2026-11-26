@@ -43,7 +43,7 @@ async function carregarMais() {
   if (carregando || !temMais) return;
   carregando = true;
   const minhaVersao = versao;
-  if (!grade.children.length) mostrarEstado('Carregando...');
+  if (!grade.children.length) mostrarEstado('Estamos conectando com nossos servidores, aguarde um momento...');
 
   let falhou = false;
   try {
@@ -152,8 +152,12 @@ function preencherModal(animal) {
   campos.foto.src = animal.foto ?? '';
   campos.foto.alt = nomeDoPet(animal);
   campos.nome.textContent = nomeDoPet(animal);
-  campos.genero.src = animal.sexoIcone;
-  campos.genero.alt = animal.sexoRotulo;
+  campos.genero.hidden = !animal.sexoIcone; // sem sexo informado (pet encontrado), o ícone some
+  campos.genero.style.display = animal.sexoIcone ? '' : 'none';
+  if (animal.sexoIcone) {
+    campos.genero.src = animal.sexoIcone;
+    campos.genero.alt = animal.sexoRotulo;
+  }
 
   const { rotulo, classe } = infoCategoria(animal.categoria);
   campos.status.textContent = rotulo;
