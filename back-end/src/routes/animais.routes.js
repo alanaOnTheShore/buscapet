@@ -3,6 +3,7 @@ const { ah } = require('../utils/assincrono');
 const { definirRetorno } = require('../middlewares/retorno');
 const { exigirLogin } = require('../middlewares/auth');
 const { upload } = require('../middlewares/upload');
+const { bloquearEnvioSimultaneo } = require('../middlewares/envio');
 const animais = require('../controllers/animais.controller');
 
 const router = express.Router();
@@ -19,6 +20,7 @@ router.post(
   '/',
   definirRetorno('/cadastro-pet.html'),
   exigirLogin,
+  bloquearEnvioSimultaneo,
   upload.single('foto'),
   ah(animais.criar)
 );

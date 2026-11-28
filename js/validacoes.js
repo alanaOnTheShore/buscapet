@@ -48,9 +48,12 @@ export function erroDeDescricao(valor) {
   return TEXTO_LIVRE.test(texto) ? '' : 'Use apenas letras, números e pontuação comum (sem caracteres especiais).';
 }
 
-/** Detalhes da fuga: só confere os caracteres (não há mínimo). */
-export function erroDeTextoLivre(valor) {
-  return TEXTO_LIVRE.test(limpar(valor)) ? '' : 'Use apenas letras, números e pontuação comum (sem caracteres especiais).';
+/** Detalhes da fuga (só aparecem para Perdido): mínimo de 30 caracteres e sem caracteres especiais. */
+export function erroDeDetalhesFuga(valor) {
+  const texto = limpar(valor);
+  if (!texto) return '';
+  if (texto.length < DESCRICAO_MIN) return `Os detalhes da fuga devem ter no mínimo ${DESCRICAO_MIN} caracteres.`;
+  return TEXTO_LIVRE.test(texto) ? '' : 'Use apenas letras, números e pontuação comum (sem caracteres especiais).';
 }
 
 /**

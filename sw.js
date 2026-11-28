@@ -12,9 +12,10 @@
  *    então ninguém vê dados de outra conta no mesmo aparelho;
  *  - não interfere em requisições de outro domínio (as fotos do Supabase seguem o cache normal do navegador).
  *
- * Ao publicar uma mudança que precise invalidar o cache, aumente VERSAO.
+ * Ao publicar uma mudança que precise invalidar o cache, aumente VERSAO. (Mudar só o offline.html não exige:
+ * a página offline é atualizada sozinha a cada visita. Mudar o PRE_CACHE ou as regras deste arquivo, sim.)
  */
-const VERSAO = 'v1';
+const VERSAO = 'v2';
 const CACHE_CODIGO = `buscapet-codigo-${VERSAO}`;
 const CACHE_IMAGENS = `buscapet-imagens-${VERSAO}`;
 const PAGINA_OFFLINE = '/offline.html';
@@ -24,7 +25,8 @@ self.addEventListener('install', (evento) => {
   evento.waitUntil(
     caches
       .open(CACHE_CODIGO)
-      .then((cache) => cache.addAll(PRE_CACHE))
+      // cache: 'reload' ignora o cache HTTP do navegador, para a cópia guardada ser sempre a mais nova do servidor
+      .then((cache) => cache.addAll(PRE_CACHE.map((url) => new Request(url, { cache: 'reload' }))))
       .then(() => self.skipWaiting())
   );
 });
@@ -67,11 +69,28 @@ async function cachePrimeiro(requisicao, nomeCache) {
   return guardar(nomeCache, requisicao, await fetch(requisicao));
 }
 
-async function navegar(requisicao) {
+/**
+ * Mantém a cópia de /offline.html em dia. Sem isso, a cópia guardada na instalação do service worker
+ * continuaria sendo exibida para sempre, mesmo depois de o arquivo mudar no servidor.
+ * No máximo uma vez a cada 10 minutos, e só quando o servidor está respondendo.
+ */
+let ultimaAtualizacaoOffline = 0;
+async function atualizarPaginaOffline() {
+  if (Date.now() - ultimaAtualizacaoOffline < 10 * 60 * 1000) return;
+  ultimaAtualizacaoOffline = Date.now();
+  try {
+    await guardar(CACHE_CODIGO, PAGINA_OFFLINE, await fetch(PAGINA_OFFLINE, { cache: 'reload' }));
+  } catch {
+    ultimaAtualizacaoOffline = 0; // sem rede agora: tenta de novo na próxima visita
+  }
+}
+
+async function navegar(requisicao, evento) {
   try {
     const resposta = await fetch(requisicao);
     // 502/503/504: o servidor está acordando ou fora do ar (comum em hospedagem gratuita)
     if (resposta.status >= 502 && resposta.status <= 504) return await caches.match(PAGINA_OFFLINE);
+    evento.waitUntil(atualizarPaginaOffline());
     return resposta;
   } catch {
     return caches.match(PAGINA_OFFLINE);
@@ -86,7 +105,7 @@ self.addEventListener('fetch', (evento) => {
   if (url.origin !== self.location.origin) return;
 
   if (requisicao.mode === 'navigate') {
-    evento.respondWith(navegar(requisicao));
+    evento.respondWith(navegar(requisicao, evento));
     return;
   }
 

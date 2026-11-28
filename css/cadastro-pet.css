@@ -171,8 +171,39 @@ textarea + .contador-campo {
   gap: 20px;
 }
 
+.card-aviso .btn-salvar-pet {
+  background-color: var(--principal);
+  color: var(--branco);
+}
+
 .card-aviso p {
   font-size: 16px;
   line-height: 1.5;
   color: var(--principal);
+}
+
+/* "SALVANDO..." */
+#aviso-salvando {
+  z-index: 1100;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto;
+  border: 4px solid var(--secundaria-baixo);
+  border-top-color: var(--principal);
+  border-radius: 50%;
+  animation: girar 0.9s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-salvar-pet:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
