@@ -99,7 +99,7 @@ describe('Cadastro de pet para adoção (POST /api/animais)', () => {
     expect(adocao.status).toBe(400);
     expect(adocao.body.campos.sexo).toBeDefined();
 
-    const perdido = await enviarPet(agent, { categoria: 'PERDIDO', detalhes_fuga: 'Fugiu ontem à noite', sexo: '' });
+    const perdido = await enviarPet(agent, { categoria: 'PERDIDO', detalhes_fuga: 'Fugiu ontem à noite pelo portão da frente', sexo: '' });
     expect(perdido.status).toBe(400);
     expect(perdido.body.campos.sexo).toBeDefined();
     expect((await pool.query('SELECT 1 FROM animais')).rowCount).toBe(0);
@@ -200,12 +200,16 @@ describe('Cadastro de pet para adoção (POST /api/animais)', () => {
     expect(semFuga.status).toBe(400);
     expect(semFuga.body.campos.detalhes_fuga).toBeDefined();
 
-    await enviarPet(agent, { categoria: 'PERDIDO', detalhes_fuga: 'Fugiu às 18h' }).expect(201);
+    const fugaCurta = await enviarPet(agent, { categoria: 'PERDIDO', detalhes_fuga: 'a'.repeat(29) });
+    expect(fugaCurta.status).toBe(400);
+    expect(fugaCurta.body.campos.detalhes_fuga).toMatch(/mínimo de 30/);
+
+    await enviarPet(agent, { categoria: 'PERDIDO', detalhes_fuga: 'Fugiu às 18h pelo portão da frente.' }).expect(201);
     await enviarPet(agent, { categoria: 'ENCONTRADO', nome: '' }).expect(201);
 
     const { rows } = await pool.query('SELECT categoria, nome, detalhes_fuga FROM animais ORDER BY id');
     expect(rows).toEqual([
-      { categoria: 'PERDIDO', nome: 'Rex', detalhes_fuga: 'Fugiu às 18h' },
+      { categoria: 'PERDIDO', nome: 'Rex', detalhes_fuga: 'Fugiu às 18h pelo portão da frente.' },
       { categoria: 'ENCONTRADO', nome: null, detalhes_fuga: null },
     ]);
   });

@@ -9,7 +9,7 @@ const { normalizarSexo } = require('./sexo');
 // Limite do nome no cadastro (a coluna do banco aceita até 80; o front usa o mesmo número em cadastro-pet.html)
 const NOME_MAX = 30;
 
-// Mínimo de caracteres da descrição (o front usa o mesmo número em cadastro-pet.html)
+// Mínimo de caracteres da descrição e dos detalhes da fuga (o front usa o mesmo número em js/validacoes.js)
 const DESCRICAO_MIN = 30;
 // Nome do pet: letras (com acentos), números, espaço, hífen e apóstrofo
 const NOME_PET = /^[\p{L}\p{N}][\p{L}\p{M}\p{N}' \u2019-]*$/u;
@@ -51,6 +51,8 @@ function validarAnimal(body, arquivo, categoriaFixa = null) {
 
   if (regra && regra.fuga === 'obrigatoria' && !detalhesFuga) {
     campos.detalhes_fuga = 'O detalhamento da fuga é obrigatório.';
+  } else if (regra && regra.fuga === 'obrigatoria' && detalhesFuga.length < DESCRICAO_MIN) {
+    campos.detalhes_fuga = `Os detalhes da fuga devem ter no mínimo ${DESCRICAO_MIN} caracteres.`;
   } else if (regra && regra.fuga === 'proibida' && detalhesFuga) {
     campos.detalhes_fuga = 'Detalhes de fuga só se aplicam a pets perdidos.';
   } else if (detalhesFuga.length > 1000) {

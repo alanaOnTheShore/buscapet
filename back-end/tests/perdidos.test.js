@@ -61,6 +61,18 @@ describe('Módulo de Pets Perdidos', () => {
     expect(rows).toEqual([{ detalhes_fuga: petPerdidoMock.detalhes_fuga, sexo: 'M' }]);
   });
 
+  it('detalhes da fuga: mínimo de 30 caracteres (29 recusa, 30 aceita) e sem caracteres especiais', async () => {
+    const curto = await enviar(agent, { ...petPerdidoMock, detalhes_fuga: 'a'.repeat(29) });
+    expect(curto.status).toBe(400);
+    expect(curto.body.campos.detalhes_fuga).toMatch(/mínimo de 30/);
+
+    const especial = await enviar(agent, { ...petPerdidoMock, detalhes_fuga: 'Fugiu pelo portão da frente às 18h @ rua' });
+    expect(especial.status).toBe(400);
+    expect(especial.body.campos.detalhes_fuga).toBeDefined();
+
+    expect((await enviar(agent, { ...petPerdidoMock, detalhes_fuga: 'a'.repeat(30) })).status).toBe(201);
+  });
+
   it('deve retornar erro 400 se tentar cadastrar pet PERDIDO sem detalhes_fuga', async () => {
     const response = await enviar(agent, { ...petPerdidoMock, detalhes_fuga: undefined });
 

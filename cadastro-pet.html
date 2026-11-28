@@ -65,6 +65,7 @@
             rows="3"
             maxlength="1000"
           ></textarea>
+          <small id="contador-fuga" class="contador-campo" aria-live="polite"></small>
         </div>
 
         <!-- SEXO -->
@@ -104,11 +105,19 @@
           <span class="upload-placeholder">📸 Escolher imagem do pet</span>
         </div>
 
-        <button type="submit" class="btn-salvar-pet">
+        <button type="submit" id="btn-cadastrar-pet" class="btn-salvar-pet">
           CADASTRAR PET
         </button>
       </form>
     </main>
+
+    <!-- "SALVANDO..." (aparece enquanto o cadastro é enviado e bloqueia novos cliques) -->
+    <div id="aviso-salvando" class="fundo-aviso" role="alertdialog" aria-modal="true" aria-live="assertive" aria-labelledby="aviso-salvando-texto">
+      <div class="card-aviso">
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="aviso-salvando-texto">Salvando...</p>
+      </div>
+    </div>
 
     <!-- AVISO ANTES DE ESCOLHER A FOTO -->
     <div id="aviso-foto" class="fundo-aviso" role="dialog" aria-modal="true" aria-labelledby="aviso-foto-texto">

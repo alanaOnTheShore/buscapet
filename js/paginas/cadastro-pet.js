@@ -3,7 +3,7 @@
  * (ck_animais_nome e ck_animais_detalhes_fuga). O envio é o do próprio formulário (multipart).
  */
 import { iniciarPagina } from '../geral.js';
-import { validarCampo, erroDeNomePet, erroDeDescricao, erroDeTextoLivre, DESCRICAO_MIN } from '../validacoes.js';
+import { validarCampo, erroDeNomePet, erroDeDescricao, erroDeDetalhesFuga, DESCRICAO_MIN } from '../validacoes.js';
 
 iniciarPagina();
 
@@ -24,21 +24,52 @@ function atualizarContadorNome() {
 inputNome.addEventListener('input', atualizarContadorNome);
 atualizarContadorNome();
 
-// Descrição: mínimo de 30 caracteres. O contador mostra quanto falta.
+// Descrição e detalhes da fuga: mínimo de 30 caracteres. O contador mostra quanto falta.
 const inputDescricao = document.getElementById('descricao-pet');
-const contadorDescricao = document.getElementById('contador-descricao');
-function atualizarContadorDescricao() {
-  const tamanho = inputDescricao.value.trim().length;
-  contadorDescricao.textContent =
-    tamanho < DESCRICAO_MIN ? `${tamanho}/${DESCRICAO_MIN} (mínimo de ${DESCRICAO_MIN} caracteres)` : `${tamanho} caracteres`;
+function ligarContadorMinimo(campo, contador) {
+  const atualizar = () => {
+    const tamanho = campo.value.trim().length;
+    contador.textContent =
+      tamanho < DESCRICAO_MIN ? `${tamanho}/${DESCRICAO_MIN} (mínimo de ${DESCRICAO_MIN} caracteres)` : `${tamanho} caracteres`;
+  };
+  campo.addEventListener('input', atualizar);
+  atualizar();
 }
-inputDescricao.addEventListener('input', atualizarContadorDescricao);
-atualizarContadorDescricao();
+ligarContadorMinimo(inputDescricao, document.getElementById('contador-descricao'));
+ligarContadorMinimo(inputFuga, document.getElementById('contador-fuga'));
 
 // Sem caracteres especiais (acentos valem). Com erro, o navegador bloqueia o envio e mostra a mensagem.
 validarCampo(inputNome, () => erroDeNomePet(inputNome.value));
 validarCampo(inputDescricao, () => erroDeDescricao(inputDescricao.value));
-validarCampo(inputFuga, () => erroDeTextoLivre(inputFuga.value));
+validarCampo(inputFuga, () => erroDeDetalhesFuga(inputFuga.value));
+
+// Envio: uma vez só. O formulário é enviado pelo navegador (a página recarrega no fim), então basta
+// travar o botão e abrir o aviso "Salvando..." no primeiro envio válido. Sem isso, vários cliques
+// seguidos (ou Enter repetido) cadastram o mesmo pet várias vezes. O servidor também recusa duplicatas.
+const formulario = document.getElementById('form-cadastrar-pet');
+const botaoCadastrar = document.getElementById('btn-cadastrar-pet');
+const avisoSalvando = document.getElementById('aviso-salvando');
+let enviando = false;
+
+formulario.addEventListener('submit', (evento) => {
+  if (enviando) {
+    evento.preventDefault(); // já tem um envio em andamento
+    return;
+  }
+  enviando = true;
+  botaoCadastrar.disabled = true;
+  botaoCadastrar.textContent = 'SALVANDO...';
+  avisoSalvando.classList.add('mostrar');
+});
+
+// Voltar pelo botão do navegador pode trazer a página congelada no meio do envio: libera de novo
+window.addEventListener('pageshow', (evento) => {
+  if (!evento.persisted) return;
+  enviando = false;
+  botaoCadastrar.disabled = false;
+  botaoCadastrar.textContent = 'CADASTRAR PET';
+  avisoSalvando.classList.remove('mostrar');
+});
 
 // Aviso antes de escolher a foto: o card aparece, e só depois do "Ok" abre a escolha de arquivo.
 const inputFoto = document.getElementById('foto-pet');
